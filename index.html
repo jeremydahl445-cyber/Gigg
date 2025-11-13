@@ -3,134 +3,79 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>GIF placeholders — Orange background</title>
+<title>GIF Layout</title>
+
 <style>
-  /* page background */
-  html,body{
-    height:100%;
-    margin:0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background: linear-gradient(180deg,#ff9900 0%, #ff7a00 60%); /* orange gradient */
+  html, body {
+    margin: 0;
+    height: 100%;
   }
 
-  /* central canvas that mirrors your screenshot area */
+  /* Replace this with your real background later */
+  body {
+    background: url("55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efee7_1280.jpg") 
+                no-repeat center center fixed;
+    background-size: cover;
+  }
+
   .canvas {
     position: relative;
-    width: 1200px;           /* adjust to desired workspace width */
-    height: 700px;           /* adjust to desired workspace height */
+    width: 1200px;
+    height: 700px;
     margin: 24px auto;
-    box-sizing: border-box;
-    border: 1px solid rgba(0,0,0,0.08);
-    background: transparent;
-    overflow: visible;
   }
 
-  /* common styles for gif placeholders */
   .gif {
     position: absolute;
     object-fit: cover;
-    background: rgba(255,255,255,0.06);
-    border: 6px solid rgba(255,255,255,0.9);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
     display: block;
+    border: none;
+    box-shadow: none;
+    background: none;
   }
 
-  /* top-left rotated cube-like placeholder */
   .gif.cube {
-    width: 140px;
-    height: 140px;
-    left: 80px;
+    width: 400px;
+    height: 400px;
+    left: -100px;
     top: 30px;
-    transform: perspective(600px) rotateX(12deg) rotateY(-18deg);
-    border-radius: 6px;
-  }
+     }
 
-  /* big center */
   .gif.large {
     width: 420px;
     height: 420px;
     left: calc(50% - 210px);
     top: 40px;
-    transform: none;
-    border-radius: 4px;
   }
 
-  /* medium right */
   .gif.medium {
     width: 240px;
     height: 240px;
     right: 90px;
     top: 110px;
-    border-radius: 3px;
   }
 
-  /* small bottom-left */
+  /* bottom-left — made slightly bigger */
   .gif.small {
-    width: 72px;
-    height: 72px;
-    left: 160px;
-    top: 380px;
-    border-radius: 4px;
-    border-width: 5px;
-  }
-
-  /* mobile responsiveness (scales down) */
-  @media (max-width:1280px){
-    .canvas{ width: calc(100% - 48px); height: 58vh; }
-    .gif.large{ width: 34vw; height: 34vw; left: calc(50% - 17vw); top: 3vh; }
-    .gif.cube{ width: 10vw; height: 10vw; left: 6vw; top: 2vh; transform: perspective(400px) rotateX(10deg) rotateY(-14deg); }
-    .gif.medium{ width: 18vw; height: 18vw; right: 6vw; top: 8vh; }
-    .gif.small{ width: 6.2vw; height: 6.2vw; left: 12vw; top: 44vh; }
-  }
-
-  /* simple label overlay for placeholders (optional) */
-  .placeholder-label {
-    position: absolute;
-    left: 12px;
-    bottom: 8px;
-    font-size: 12px;
-    padding: 4px 6px;
-    color: rgba(0,0,0,0.8);
-    background: rgba(255,255,255,0.85);
-    border-radius: 4px;
-    font-weight: 600;
-    pointer-events: none;
+    width: 350px;
+    height: 350px;
+    left: 20px;
+    top: 430px;
   }
 </style>
 </head>
+
 <body>
+  <div class="canvas">
 
-  <div class="canvas" aria-label="Workspace with gif placeholders">
+    <img class="gif cube" src="3dgifmaker24967.gif" alt="Top-left gif">
 
-    <!-- TOP-LEFT cube-like placeholder
-         Replace "top-left.gif" with your actual gif filename/path -->
-    <img class="gif cube" src="3dgifmaker24967.gif" alt="Top-left gif placeholder">
-    <div class="placeholder-label" style="left:88px;top:170px;">top-left.gif</div>
+    <img class="gif large" src="Screenshot 2025-11-11 195523.png" alt="Center gif">
 
-    <!-- CENTER large placeholder
-         Replace "center.gif" with your actual gif filename/path -->
-    <img class="gif large" src="Screenshot 2025-11-11 195523.png" alt="Center gif placeholder">
-    <div class="placeholder-label" style="left:calc(50% - 80px);top:460px;">center.gif</div>
+    <img class="gif medium" src="3dgifmaker04873.gif" alt="Right gif">
 
-    <!-- RIGHT medium placeholder
-         Replace "right.gif" with your actual gif filename/path -->
-    <img class="gif medium" src="3dgifmaker04873.gif" alt="Right gif placeholder">
-    <div class="placeholder-label" style="right:100px;top:360px;">right.gif</div>
-
-    <!-- BOTTOM-LEFT small placeholder
-         Replace "small.gif" with your actual gif filename/path -->
-    <img class="gif small" src="3dgifmaker12203.gif" alt="Small gif placeholder">
-    <div class="placeholder-label" style="left:172px;top:455px;">small.gif</div>
+    <img class="gif small" src="3dgifmaker12203.gif" alt="Small gif">
 
   </div>
-
-<!-- short usage note -->
-<script>
-  /* Quick helper: if you want to programmatically swap placeholders,
-     use data-gif on elements or set .src values here.
-     Example:
-       document.querySelector('.gif.large').src = 'gifs/actual-large.gif';
-  */
-</script>
 </body>
 </html>
