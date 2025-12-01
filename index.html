@@ -1,6 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "uexksjkj4q");
+</script>
 <meta charset="utf-8" />
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -12,11 +19,11 @@
     height: 100%;
   }
 
-  /* Replace this with your real background later */
   body {
     background: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efee7_1280.jpg") 
                 no-repeat center center fixed;
     background-size: cover;
+    font-family: Arial, sans-serif;
   }
 
   .canvas {
@@ -40,7 +47,7 @@
     height: 400px;
     left: -100px;
     top: 30px;
-     }
+  }
 
   .gif.large {
     width: 420px;
@@ -56,27 +63,132 @@
     top: 110px;
   }
 
-  /* bottom-left — made slightly bigger */
   .gif.small {
     width: 350px;
     height: 350px;
     left: 20px;
     top: 430px;
   }
+
+  /* BUTTON STYLES */
+  #openGameBtn, #openGameBtn2 {
+    position: fixed;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    padding: 14px 28px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    backdrop-filter: blur(12px);
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.25s ease;
+  }
+
+  #openGameBtn { bottom: 30px; }
+  #openGameBtn2 { bottom: 90px; } /* second button above first */
+
+  #openGameBtn:hover,
+  #openGameBtn2:hover {
+    background: rgba(255, 255, 255, 0.28);
+  }
+
+  /* MODAL BACKDROP SHARED */
+  .iframeModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+  }
+
+  .iframe-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 85%;
+    background: #000;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+  }
+
+  .iframe-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .closeModal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    z-index: 1100;
+    user-select: none;
+  }
+
+  .closeModal:hover {
+    color: #ddd;
+  }
+
 </style>
 </head>
 
 <body>
+
   <div class="canvas">
-
     <img class="gif cube" src="images/3dgifmaker24967.gif" alt="Top-left gif">
-
     <img class="gif large" src="images/Screenshot 2025-11-11 195523.png" alt="Center gif">
-
     <img class="gif medium" src="images/3dgifmaker04873.gif" alt="Right gif">
-
     <img class="gif small" src="images/3dgifmaker12203.gif" alt="Small gif">
-
   </div>
+
+  <!-- Button 1 -->
+  <button id="openGameBtn">Blackjack</button>
+
+  <!-- Button 2 -->
+  <button id="openGameBtn2">Racing Game</button>
+
+  <!-- Modal 1 -->
+  <div id="iframeModal1" class="iframeModal">
+    <div class="closeModal" id="closeModal1">&times;</div>
+    <div class="iframe-container">
+      <iframe src="https://demo-assets.realisticgames.co.uk/RegalUI/Blackjack3Box/1.4.5-6.5.3/desktop/default/en/demo.html?sid=860e1371-c32b-4ee8-b4e0-8108d0388079&traceId=d5c3daa2-b572-46c6-bb51-82c3730fe967&externalGameId=rgl-blackjack-web&lang=EN"></iframe>
+    </div>
+  </div>
+
+  <!-- Modal 2 (change the URL to anything you want) -->
+  <div id="iframeModal2" class="iframeModal">
+    <div class="closeModal" id="closeModal2">&times;</div>
+    <div class="iframe-container">
+      <iframe src="https://gamea.azgame.io/mad-trails/"></iframe>
+    </div>
+  </div>
+
+<script>
+  function setupModal(openBtnId, modalId, closeBtnId) {
+    const openBtn = document.getElementById(openBtnId);
+    const modal = document.getElementById(modalId);
+    const closeBtn = document.getElementById(closeBtnId);
+
+    openBtn.onclick = () => modal.style.display = "block";
+    closeBtn.onclick = () => modal.style.display = "none";
+
+    modal.onclick = (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    };
+  }
+
+  setupModal("openGameBtn", "iframeModal1", "closeModal1");
+  setupModal("openGameBtn2", "iframeModal2", "closeModal2");
+</script>
+
 </body>
 </html>
