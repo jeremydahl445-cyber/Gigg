@@ -19,7 +19,7 @@
   html, body {
     margin: 0;
     height: 100%;
-    overflow: hidden;
+    overflow: auto;
   }
 
   body {
@@ -29,15 +29,15 @@
     font-family: Arial, sans-serif;
   }
 
-  /* 3x3 grid that fills the viewport */
+  /* responsive grid that fills the viewport */
   .canvas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(3, calc((100vw - 40px) / 3 * 0.75));
     gap: 10px;
     padding: 10px;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
   }
 
   .canvas img {
