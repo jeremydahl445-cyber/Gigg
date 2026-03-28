@@ -29,7 +29,6 @@
     font-family: Arial, sans-serif;
   }
 
-  /* responsive grid that fills the viewport */
   .canvas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -49,11 +48,20 @@
     box-shadow: 0 4px 18px rgba(0,0,0,0.35);
   }
 
-  /* BUTTON STYLES */
-  #openGameBtn, #openGameBtn2 {
+  /* ── GAME LAUNCHER ── */
+  #gameLauncher {
     position: fixed;
+    bottom: 30px;
     right: 30px;
-    background: rgba(255, 255, 255, 0.15);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  #toggleDropdown {
+    background: rgba(255,255,255,0.15);
     color: white;
     padding: 14px 28px;
     border: 1px solid rgba(255,255,255,0.3);
@@ -62,18 +70,39 @@
     font-size: 18px;
     cursor: pointer;
     transition: 0.25s ease;
-    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+  #toggleDropdown:hover { background: rgba(255,255,255,0.28); }
 
-  #openGameBtn  { bottom: 30px; }
-  #openGameBtn2 { bottom: 90px; }
-
-  #openGameBtn:hover,
-  #openGameBtn2:hover {
-    background: rgba(255, 255, 255, 0.28);
+  #gameDropdown {
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(20,20,20,0.75);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 10px;
+    min-width: 200px;
   }
+  #gameDropdown.open { display: flex; }
 
-  /* MODAL */
+  .gameOption {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    padding: 10px 16px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s ease;
+  }
+  .gameOption:hover { background: rgba(255,255,255,0.25); }
+
+  /* ── MODAL ── */
   .iframeModal {
     display: none;
     position: fixed;
@@ -113,7 +142,6 @@
     z-index: 1100;
     user-select: none;
   }
-
   .closeModal:hover { color: #ddd; }
 </style>
 </head>
@@ -121,58 +149,74 @@
 <body>
 
   <div class="canvas">
-    <img src="arlo.png"        alt="Arlo">
-    <img src="BUTTERDOG.JPEG"  alt="Butterdog">
-    <img src="arlo.gif"        alt="Arlo gif">
-    <img src="BDOGS2.JPEG"     alt="B Dogs">
-    <img src="MADDIE.JPEG"     alt="Maddie">
-    <img src="CHICKEN.JPEG"    alt="Chicken">
-    <img src="COOPER.JPEG"     alt="Cooper">
-    <img src="EVANDOGREAL.JPEG"    alt="Evan Dog">
-    <!-- 9th cell left intentionally empty or add another photo -->
+    <img src="arlo.png"           alt="Arlo">
+    <img src="BUTTERDOG.JPEG"     alt="Butterdog">
+    <img src="arlo.gif"           alt="Arlo gif">
+    <img src="BDOGS2.JPEG"        alt="B Dogs">
+    <img src="MADDIE.JPEG"        alt="Maddie">
+    <img src="CHICKEN.JPEG"       alt="Chicken">
+    <img src="COOPER.JPEG"        alt="Cooper">
+    <img src="EVANDOGREAL.JPEG"   alt="Evan Dog">
     <div></div>
   </div>
 
-  <!-- Buttons -->
-  <button id="openGameBtn">2048</button>
-  <button id="openGameBtn2">2048</button>
-    <button id="openGameBtn3">2048</button>
-
-  <!-- Modal 1 -->
-  <div id="iframeModal1" class="iframeModal">
-    <div class="closeModal" id="closeModal1">&times;</div>
-    <div class="iframe-container">
-      <iframe src="204.ryet.ru"></iframe>
-    </div>
+  <!-- Game launcher -->
+  <div id="gameLauncher">
+    <div id="gameDropdown"></div>
+    <button id="toggleDropdown">🎮 Games ▾</button>
   </div>
 
-  <!-- Modal 2 -->
-  <div id="iframeModal2" class="iframeModal">
-    <div class="closeModal" id="closeModal2">&times;</div>
+  <!-- Single reusable modal -->
+  <div id="gameModal" class="iframeModal">
+    <div class="closeModal" id="closeGameModal">&times;</div>
     <div class="iframe-container">
-      <iframe src="204.ryet.ru"></iframe>
+      <iframe id="gameFrame" src=""></iframe>
     </div>
   </div>
- <!-- Modal 2 -->
-  <div id="iframeModal3" class="iframeModal">
-    <div class="closeModal" id="closeModal3">&times;</div>
-    <div class="iframe-container">
-      <iframe src="204.ryet.ru"></iframe>
-    </div>
-  </div>
+
 <script>
-  function setupModal(openBtnId, modalId, closeBtnId) {
-    const openBtn  = document.getElementById(openBtnId);
-    const modal    = document.getElementById(modalId);
-    const closeBtn = document.getElementById(closeBtnId);
+  // ============================================================
+  //  ADD OR REMOVE GAMES HERE — just edit this array!
+  // ============================================================
+  const GAMES = [
+    { name: "Blackjack",    url: "https://zv1y2i8p.play.gamezop.com/g/H13-Z8sQILx" },
+    { name: "Racing Game",  url: "https://gamea.azgame.io/mad-trails/"              },
+    { name: "2048",         url: "https://play2048.co/"                             },
+    // { name: "My New Game", url: "https://example.com/game" },  <- add more like this
+  ];
+  // ============================================================
 
-    openBtn.onclick  = () => modal.style.display = "block";
-    closeBtn.onclick = () => modal.style.display = "none";
-    modal.onclick    = (e) => { if (e.target === modal) modal.style.display = "none"; };
-  }
+  const dropdown  = document.getElementById("gameDropdown");
+  const toggleBtn = document.getElementById("toggleDropdown");
+  const modal     = document.getElementById("gameModal");
+  const closeBtn  = document.getElementById("closeGameModal");
+  const gameFrame = document.getElementById("gameFrame");
 
-  setupModal("openGameBtn",  "iframeModal1", "closeModal1");
-  setupModal("openGameBtn2", "iframeModal2", "closeModal2");
+  // Build dropdown buttons from GAMES array
+  GAMES.forEach(game => {
+    const btn = document.createElement("button");
+    btn.className   = "gameOption";
+    btn.textContent = game.name;
+    btn.onclick = () => {
+      gameFrame.src       = game.url;
+      modal.style.display = "block";
+      dropdown.classList.remove("open");
+    };
+    dropdown.appendChild(btn);
+  });
+
+  // Toggle dropdown
+  toggleBtn.onclick = (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle("open");
+  };
+
+  // Close modal
+  closeBtn.onclick = () => { modal.style.display = "none"; gameFrame.src = ""; };
+  modal.onclick    = (e) => { if (e.target === modal) { modal.style.display = "none"; gameFrame.src = ""; } };
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", () => dropdown.classList.remove("open"));
 </script>
 
 </body>
