@@ -14,9 +14,12 @@
 <title>Myles</title>
 
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
+
   html, body {
     margin: 0;
     height: 100%;
+    overflow: hidden;
   }
 
   body {
@@ -26,76 +29,24 @@
     font-family: Arial, sans-serif;
   }
 
+  /* 3x3 grid that fills the viewport */
   .canvas {
-    position: relative;
-    width: 1200px;
-    height: 700px;
-    margin: 24px auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+    padding: 10px;
+    width: 100vw;
+    height: 100vh;
   }
 
-  .gif {
-    position: absolute;
+  .canvas img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
+    border-radius: 12px;
     display: block;
-    border: none;
-    box-shadow: none;
-    background: none;
-  }
-
-  .gif.cube {
-    width: 400px;
-    height: 400px;
-    left: -90px;
-    top: 30px;
-  }
-
-  .gif.large {
-    width: 420px;
-    height: 540px;
-    left: calc(50% - 220px);
-    top: 45px;
-  }
-
-  .gif.medium {
-    width: 480px;
-    height: 480px;
-    right: -90px;
-    top: 30px;
-  }
-
-  .gif.small {
-    width: 350px;
-    height: 350px;
-    left: 15px;
-    top: 500px;
-  }
-   
-   .gif.maddie {
-    width: 50px;
-    height: 50px;
-    left: 15px;
-    top: 500px;
-  }
-       
-   .gif.cooper {
-    width: 100px;
-    height: 100px;
-    left: 15px;
-    top: 500px;
-  }
-       
-   .gif.chicken {
-    width: 200px;
-    height: 200px;
-    left: 15px;
-    top: 500px;
-  }
-       
-   .gif.evandog {
-    width: 350px;
-    height: 350px;
-    left: 15px;
-    top: 500px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
   }
 
   /* BUTTON STYLES */
@@ -111,22 +62,23 @@
     font-size: 18px;
     cursor: pointer;
     transition: 0.25s ease;
+    z-index: 500;
   }
 
-  #openGameBtn { bottom: 30px; }
-  #openGameBtn2 { bottom: 90px; } /* second button above first */
+  #openGameBtn  { bottom: 30px; }
+  #openGameBtn2 { bottom: 90px; }
 
   #openGameBtn:hover,
   #openGameBtn2:hover {
     background: rgba(255, 255, 255, 0.28);
   }
 
-  /* MODAL BACKDROP SHARED */
+  /* MODAL */
   .iframeModal {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0,0,0,0.7);
     backdrop-filter: blur(4px);
     z-index: 1000;
   }
@@ -162,30 +114,27 @@
     user-select: none;
   }
 
-  .closeModal:hover {
-    color: #ddd;
-  }
-
+  .closeModal:hover { color: #ddd; }
 </style>
 </head>
 
 <body>
 
   <div class="canvas">
-    <img class="gif cube" src="arlo.png" alt="Top-left gif">
-    <img class="gif large" src="BUTTERDOG.JPEG" alt="Center gif">
-    <img class="gif medium" src="arlo.gif" alt="Right gif">
-    <img class="gif small" src="BDOGS2.JPEG" alt="Small gif">
-    <img class="maddie" src="MADDIE.JPEG" alt="maddie">
-    <img class="chicken" src="CHICKEN.JPEG" alt="chicken">
-    <img class="cooper" src="COOPER.JPEG" alt="cooper">
-    <img class="evandog" src="EVANDOG.JPEG" alt="evandog">
+    <img src="arlo.png"        alt="Arlo">
+    <img src="BUTTERDOG.JPEG"  alt="Butterdog">
+    <img src="arlo.gif"        alt="Arlo gif">
+    <img src="BDOGS2.JPEG"     alt="B Dogs">
+    <img src="MADDIE.JPEG"     alt="Maddie">
+    <img src="CHICKEN.JPEG"    alt="Chicken">
+    <img src="COOPER.JPEG"     alt="Cooper">
+    <img src="EVANDOG.JPEG"    alt="Evan Dog">
+    <!-- 9th cell left intentionally empty or add another photo -->
+    <div></div>
   </div>
 
-  <!-- Button 1 -->
+  <!-- Buttons -->
   <button id="openGameBtn">Blackjack</button>
-
-  <!-- Button 2 -->
   <button id="openGameBtn2">Racing Game</button>
 
   <!-- Modal 1 -->
@@ -196,7 +145,7 @@
     </div>
   </div>
 
-  <!-- Modal 2 (change the URL to anything you want) -->
+  <!-- Modal 2 -->
   <div id="iframeModal2" class="iframeModal">
     <div class="closeModal" id="closeModal2">&times;</div>
     <div class="iframe-container">
@@ -206,19 +155,16 @@
 
 <script>
   function setupModal(openBtnId, modalId, closeBtnId) {
-    const openBtn = document.getElementById(openBtnId);
-    const modal = document.getElementById(modalId);
+    const openBtn  = document.getElementById(openBtnId);
+    const modal    = document.getElementById(modalId);
     const closeBtn = document.getElementById(closeBtnId);
 
-    openBtn.onclick = () => modal.style.display = "block";
+    openBtn.onclick  = () => modal.style.display = "block";
     closeBtn.onclick = () => modal.style.display = "none";
-
-    modal.onclick = (e) => {
-      if (e.target === modal) modal.style.display = "none";
-    };
+    modal.onclick    = (e) => { if (e.target === modal) modal.style.display = "none"; };
   }
 
-  setupModal("openGameBtn", "iframeModal1", "closeModal1");
+  setupModal("openGameBtn",  "iframeModal1", "closeModal1");
   setupModal("openGameBtn2", "iframeModal2", "closeModal2");
 </script>
 
