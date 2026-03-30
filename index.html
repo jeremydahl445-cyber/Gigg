@@ -284,18 +284,49 @@
        SECRET BOTTOM-LEFT GAMES — add URLs here
   ══════════════════════════════════════════════════ -->
   <div id="secretLauncher">
+    <button id="open2048Btn" style="display:none;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:14px 28px;font-size:18px;color:white;backdrop-filter:blur(12px);cursor:pointer;transition:0.25s ease;">🐶 Myles 2048</button>
     <div id="secretGameDropdown"></div>
     <button id="toggleSecretDropdown">Evil Games</button>
+  </div>
+
+  <!-- Custom 2048 Modal -->
+  <div id="modal2048" class="iframeModal">
+    <div class="closeModal" id="close2048">&times;</div>
+    <div class="iframe-container" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;">
+      <div id="game2048root" style="display:flex;flex-direction:column;align-items:center;font-family:Arial,sans-serif;color:white;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:440px;margin-bottom:16px;">
+          <h2 style="margin:0;font-size:28px;letter-spacing:2px;">🐶 MYLES 2048</h2>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div style="background:rgba(255,255,255,0.1);border-radius:10px;padding:8px 18px;text-align:center;">
+              <div style="font-size:11px;opacity:0.6;">SCORE</div>
+              <div id="g2048-score" style="font-size:22px;font-weight:bold;">0</div>
+            </div>
+            <button id="g2048-restart" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:10px;color:white;padding:8px 14px;cursor:pointer;font-size:14px;">New Game</button>
+          </div>
+        </div>
+        <div id="g2048-board" style="display:grid;grid-template-columns:repeat(4,100px);grid-template-rows:repeat(4,100px);gap:10px;background:rgba(0,0,0,0.3);border-radius:16px;padding:10px;"></div>
+        <div id="g2048-msg" style="margin-top:16px;font-size:20px;font-weight:bold;min-height:30px;"></div>
+        <div style="margin-top:8px;font-size:13px;opacity:0.5;">Arrow keys or WASD to move</div>
+      </div>
+    </div>
   </div>
 
   <script>
   const SECRET_GAMES = [
     // Add secret games below — same format as GAMES
-    { name: "Evil WorldGuessr",      url: "https://www.worldguessr.com/" },
+    { name: "Slope",      url: "https://slope-game.github.io/" },
     // { name: "My Secret Game", url: "https://example.com/game" },
   ];
   </script>
   <!-- ══════════════════════════════════════════════════ -->
+
+  <!-- Flappy Bird Modal -->
+  <div id="modalFlappy" class="iframeModal">
+    <div class="closeModal" id="closeFlappy">&times;</div>
+    <div class="iframe-container" style="background:#70c5ce;display:flex;align-items:center;justify-content:center;">
+      <canvas id="flappyCanvas" width="360" height="640" style="border-radius:12px;display:block;box-shadow:0 0 30px rgba(0,0,0,0.5);"></canvas>
+    </div>
+  </div>
 
   <!-- Shared modal -->
   <div id="gameModal" class="iframeModal">
@@ -310,9 +341,9 @@
   //  ADD OR REMOVE GAMES HERE — just edit this array!
   // ============================================================
   const GAMES = [
-    { name: "Blackjack",   url: "https://zv1y2i8p.play.gamezop.com/g/H13-Z8sQILx" },
-    { name: "Racing Game", url: "https://gamea.azgame.io/mad-trails/"              },
-    { name: "WorldGuessr",        url: "https://www.worldguessr.com/"              },
+    { name: "Blackjack",    url: "https://zv1y2i8p.play.gamezop.com/g/H13-Z8sQILx" },
+    { name: "Racing Game",  url: "https://gamea.azgame.io/mad-trails/"              },
+    { name: "🐦 Flappy Myles", url: "__flappy__"                                   },
     // { name: "My New Game", url: "https://example.com/game" },
   ];
   // ============================================================
@@ -322,6 +353,10 @@
   const gameFrame = document.getElementById("gameFrame");
 
   function openGame(url) {
+    if (url === "__flappy__") {
+      openFlappy();
+      return;
+    }
     gameFrame.src       = url;
     modal.style.display = "block";
   }
@@ -407,6 +442,7 @@
         img.src = "Screenshot 2025-11-11 195523.png";
       });
       document.getElementById("secretLauncher").classList.add("visible");
+      document.getElementById("open2048Btn").style.display = "block";
     }
 
     if (val === "evilmyles") {
@@ -426,6 +462,369 @@
     }
   });
 </script>
+
+  // ── CUSTOM 2048 ──
+  const modal2048  = document.getElementById("modal2048");
+  const close2048  = document.getElementById("close2048");
+  const open2048   = document.getElementById("open2048Btn");
+
+  open2048.onclick  = () => { modal2048.style.display = "block"; initGame(); };
+  close2048.onclick = () => { modal2048.style.display = "none"; };
+  modal2048.onclick = (e) => { if (e.target === modal2048) modal2048.style.display = "none"; };
+
+  // Tint colours per power-of-2 value
+  const TINTS = {
+     2:    "rgba(255,255,255,0.05)",
+     4:    "rgba(255,230,100,0.25)",
+     8:    "rgba(255,180,50,0.40)",
+     16:   "rgba(255,120,30,0.50)",
+     32:   "rgba(255,60,20,0.55)",
+     64:   "rgba(220,20,20,0.60)",
+     128:  "rgba(180,0,200,0.60)",
+     256:  "rgba(80,0,220,0.65)",
+     512:  "rgba(0,80,255,0.65)",
+     1024: "rgba(0,200,180,0.70)",
+     2048: "rgba(0,255,80,0.75)",
+  };
+  function tint(v) { return TINTS[v] || "rgba(255,215,0,0.80)"; }
+
+  let board, score, gameOver;
+
+  function initGame() {
+    board    = Array.from({length:4}, () => Array(4).fill(0));
+    score    = 0;
+    gameOver = false;
+    document.getElementById("g2048-score").textContent = 0;
+    document.getElementById("g2048-msg").textContent   = "";
+    addTile(); addTile();
+    render();
+  }
+
+  function addTile() {
+    const empty = [];
+    board.forEach((row,r) => row.forEach((v,c) => { if (!v) empty.push([r,c]); }));
+    if (!empty.length) return;
+    const [r,c] = empty[Math.floor(Math.random()*empty.length)];
+    board[r][c] = Math.random() < 0.9 ? 2 : 4;
+  }
+
+  function render() {
+    const boardEl = document.getElementById("g2048-board");
+    boardEl.innerHTML = "";
+    board.forEach(row => row.forEach(val => {
+      const cell = document.createElement("div");
+      cell.style.cssText = "width:100px;height:100px;border-radius:10px;position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.4);";
+      if (val) {
+        const img = document.createElement("img");
+        img.src = "Screenshot 2025-11-11 195523.png";
+        img.style.cssText = "position:absolute;inset:0;width:100%;height:100%;object-fit:cover;";
+        cell.appendChild(img);
+        const tintDiv = document.createElement("div");
+        tintDiv.style.cssText = "position:absolute;inset:0;background:" + tint(val) + ";";
+        cell.appendChild(tintDiv);
+        const num = document.createElement("div");
+        num.textContent = val;
+        const fs = val >= 1000 ? 16 : val >= 100 ? 20 : 24;
+        num.style.cssText = "position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:"+fs+"px;font-weight:bold;color:white;text-shadow:0 1px 4px rgba(0,0,0,0.8);";
+        cell.appendChild(num);
+      } else {
+        cell.style.background = "rgba(255,255,255,0.05)";
+      }
+      boardEl.appendChild(cell);
+    }));
+    document.getElementById("g2048-score").textContent = score;
+  }
+
+  function slide(row) {
+    let r = row.filter(v => v);
+    for (let i = 0; i < r.length - 1; i++) {
+      if (r[i] === r[i+1]) { r[i] *= 2; score += r[i]; r.splice(i+1,1); }
+    }
+    while (r.length < 4) r.push(0);
+    return r;
+  }
+
+  function move(dir) {
+    if (gameOver) return;
+    const prev = JSON.stringify(board);
+    if (dir === "left")  board = board.map(r => slide(r));
+    if (dir === "right") board = board.map(r => slide([...r].reverse()).reverse());
+    if (dir === "up") {
+      for (let c=0;c<4;c++) {
+        const col = slide([board[0][c],board[1][c],board[2][c],board[3][c]]);
+        col.forEach((v,r) => board[r][c] = v);
+      }
+    }
+    if (dir === "down") {
+      for (let c=0;c<4;c++) {
+        const col = slide([board[3][c],board[2][c],board[1][c],board[0][c]]);
+        col.reverse().forEach((v,r) => board[r][c] = v);
+      }
+    }
+    if (JSON.stringify(board) !== prev) addTile();
+    render();
+    if (board.flat().includes(2048)) {
+      document.getElementById("g2048-msg").textContent = "You have earned his blessing.";
+    } else if (!canMove()) {
+      document.getElementById("g2048-msg").textContent = "Myles uses a fraction of his power to smite you.";
+      gameOver = true;
+    }
+  }
+
+  function canMove() {
+    if (board.flat().includes(0)) return true;
+    for (let r=0;r<4;r++) for (let c=0;c<4;c++) {
+      if (c<3 && board[r][c]===board[r][c+1]) return true;
+      if (r<3 && board[r][c]===board[r+1][c]) return true;
+    }
+    return false;
+  }
+
+  document.getElementById("g2048-restart").onclick = initGame;
+
+  document.addEventListener("keydown", (e) => {
+    if (modal2048.style.display !== "block") return;
+    const map = { ArrowLeft:"left", ArrowRight:"right", ArrowUp:"up", ArrowDown:"down", a:"left", d:"right", w:"up", s:"down" };
+    if (map[e.key]) { e.preventDefault(); move(map[e.key]); }
+  });
+  // ── FLAPPY BIRD ──
+  const modalFlappy = document.getElementById("modalFlappy");
+  document.getElementById("closeFlappy").onclick = () => {
+    modalFlappy.style.display = "none";
+    cancelAnimationFrame(flappyRAF);
+  };
+  modalFlappy.onclick = (e) => {
+    if (e.target === modalFlappy) { modalFlappy.style.display = "none"; cancelAnimationFrame(flappyRAF); }
+  };
+
+  function openFlappy() {
+    modalFlappy.style.display = "block";
+    startFlappy();
+  }
+
+  let flappyRAF;
+  function startFlappy() {
+    cancelAnimationFrame(flappyRAF);
+    const canvas = document.getElementById("flappyCanvas");
+    const ctx    = canvas.getContext("2d");
+    const W = canvas.width, H = canvas.height;
+
+    // Load bird image
+    const birdImg = new Image();
+    birdImg.src = "Screenshot 2025-11-11 195523.png";
+
+    // Game state
+    let bird, pipes, score, hiScore = 0, state, frameCount;
+
+    const GRAVITY   = 0.45;
+    const FLAP      = -8;
+    const PIPE_W    = 60;
+    const PIPE_GAP  = 160;
+    const PIPE_SPEED= 2.5;
+    const BIRD_SIZE = 44;
+
+    function reset() {
+      bird       = { x: 80, y: H/2, vy: 0, rot: 0 };
+      pipes      = [];
+      score      = 0;
+      frameCount = 0;
+      state      = "waiting"; // waiting | playing | dead
+    }
+
+    function flap() {
+      if (state === "dead") { reset(); return; }
+      if (state === "waiting") state = "playing";
+      bird.vy = FLAP;
+    }
+
+    // Input
+    function onKey(e) {
+      if (modalFlappy.style.display !== "block") return;
+      if (e.code === "Space" || e.code === "ArrowUp" || e.key === "w") { e.preventDefault(); flap(); }
+    }
+    function onClick() { if (modalFlappy.style.display === "block") flap(); }
+
+    canvas.addEventListener("click", onClick);
+    document.addEventListener("keydown", onKey);
+
+    // Clean up listeners when modal closes
+    const origClose = document.getElementById("closeFlappy").onclick;
+    document.getElementById("closeFlappy").onclick = () => {
+      modalFlappy.style.display = "none";
+      cancelAnimationFrame(flappyRAF);
+      canvas.removeEventListener("click", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+
+    function spawnPipe() {
+      const topH = 80 + Math.random() * (H - PIPE_GAP - 160);
+      pipes.push({ x: W, topH });
+    }
+
+    function drawBg() {
+      // Sky gradient
+      const sky = ctx.createLinearGradient(0,0,0,H);
+      sky.addColorStop(0, "#5ec8e0");
+      sky.addColorStop(1, "#b8e8f5");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      // Ground
+      ctx.fillStyle = "#ded895";
+      ctx.fillRect(0, H - 80, W, 80);
+      ctx.fillStyle = "#5ab552";
+      ctx.fillRect(0, H - 80, W, 18);
+    }
+
+    function drawPipe(p) {
+      const radius = 6;
+      // pipe body colour
+      const pipeGrad = ctx.createLinearGradient(p.x, 0, p.x + PIPE_W, 0);
+      pipeGrad.addColorStop(0, "#4caf50");
+      pipeGrad.addColorStop(0.4, "#81c784");
+      pipeGrad.addColorStop(1, "#388e3c");
+
+      // TOP pipe
+      ctx.fillStyle = pipeGrad;
+      ctx.fillRect(p.x, 0, PIPE_W, p.topH - 14);
+      // cap
+      ctx.beginPath();
+      ctx.roundRect(p.x - 4, p.topH - 28, PIPE_W + 8, 28, radius);
+      ctx.fill();
+
+      // BOTTOM pipe
+      const botY = p.topH + PIPE_GAP;
+      ctx.fillStyle = pipeGrad;
+      ctx.fillRect(p.x, botY + 14, PIPE_W, H - botY - 14 - 80);
+      // cap
+      ctx.beginPath();
+      ctx.roundRect(p.x - 4, botY, PIPE_W + 8, 28, radius);
+      ctx.fill();
+
+      // Dark edge
+      ctx.strokeStyle = "#2e7d32";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(p.x, 0, PIPE_W, p.topH - 14);
+      ctx.strokeRect(p.x, botY + 14, PIPE_W, H - botY - 14 - 80);
+    }
+
+    function drawBird() {
+      ctx.save();
+      ctx.translate(bird.x + BIRD_SIZE/2, bird.y + BIRD_SIZE/2);
+      bird.rot = Math.max(-25, Math.min(35, bird.vy * 3));
+      ctx.rotate(bird.rot * Math.PI/180);
+      ctx.beginPath();
+      ctx.arc(0, 0, BIRD_SIZE/2 + 2, 0, Math.PI*2);
+      ctx.fillStyle = "rgba(0,0,0,0.15)";
+      ctx.fill();
+      if (birdImg.complete) {
+        ctx.drawImage(birdImg, -BIRD_SIZE/2, -BIRD_SIZE/2, BIRD_SIZE, BIRD_SIZE);
+      } else {
+        ctx.fillStyle = "#f5c518";
+        ctx.fill();
+      }
+      // circle clip ring
+      ctx.beginPath();
+      ctx.arc(0, 0, BIRD_SIZE/2, 0, Math.PI*2);
+      ctx.strokeStyle = "rgba(255,255,255,0.6)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawHUD() {
+      ctx.fillStyle = "white";
+      ctx.font = "bold 42px Arial";
+      ctx.textAlign = "center";
+      ctx.shadowColor = "rgba(0,0,0,0.4)";
+      ctx.shadowBlur = 4;
+      ctx.fillText(score, W/2, 70);
+      ctx.shadowBlur = 0;
+    }
+
+    function drawWaiting() {
+      ctx.fillStyle = "rgba(0,0,0,0.35)";
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = "white";
+      ctx.font = "bold 36px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("🐦 Flappy Myles", W/2, H/2 - 40);
+      ctx.font = "20px Arial";
+      ctx.fillText("Click or press Space to start", W/2, H/2 + 10);
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fillText("Hi: " + hiScore, W/2, H/2 + 45);
+    }
+
+    function drawDead() {
+      ctx.fillStyle = "rgba(0,0,0,0.45)";
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = "white";
+      ctx.font = "bold 40px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("💀 Game Over", W/2, H/2 - 50);
+      ctx.font = "26px Arial";
+      ctx.fillText("Score: " + score, W/2, H/2);
+      ctx.fillText("Best:  " + hiScore, W/2, H/2 + 38);
+      ctx.font = "18px Arial";
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fillText("Click or Space to restart", W/2, H/2 + 85);
+    }
+
+    function collides(p) {
+      const bx = bird.x + 4, by = bird.y + 4, bw = BIRD_SIZE - 8, bh = BIRD_SIZE - 8;
+      if (bx + bw > p.x && bx < p.x + PIPE_W) {
+        if (by < p.topH || by + bh > p.topH + PIPE_GAP) return true;
+      }
+      return false;
+    }
+
+    function loop() {
+      flappyRAF = requestAnimationFrame(loop);
+      drawBg();
+
+      if (state === "playing") {
+        frameCount++;
+        // Spawn pipes
+        if (frameCount % 90 === 0) spawnPipe();
+
+        // Move pipes
+        pipes.forEach(p => p.x -= PIPE_SPEED);
+        pipes = pipes.filter(p => p.x + PIPE_W > 0);
+
+        // Score
+        pipes.forEach(p => {
+          if (!p.scored && p.x + PIPE_W < bird.x) { p.scored = true; score++; }
+        });
+
+        // Physics
+        bird.vy += GRAVITY;
+        bird.y  += bird.vy;
+
+        // Floor / ceiling
+        if (bird.y + BIRD_SIZE >= H - 80 || bird.y <= 0) {
+          state = "dead";
+          hiScore = Math.max(hiScore, score);
+        }
+
+        // Collision
+        if (pipes.some(collides)) {
+          state = "dead";
+          hiScore = Math.max(hiScore, score);
+        }
+      }
+
+      pipes.forEach(drawPipe);
+      if (state !== "waiting") drawBird();
+      drawHUD();
+
+      if (state === "waiting") drawWaiting();
+      if (state === "dead")    drawDead();
+    }
+
+    reset();
+    loop();
+  }
 
 </body>
 </html>
