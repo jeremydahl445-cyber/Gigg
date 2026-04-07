@@ -1,35 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "uexksjkj4q");
-</script>
 <meta charset="utf-8" />
-<link rel="icon" type="image/x-icon" href="favicon.ico">
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Myles</title>
-
 <style>
   *, *::before, *::after { box-sizing: border-box; }
-
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: auto;
-  }
-
+  html, body { margin: 0; height: 100%; overflow: auto; }
   body {
-    background: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efee7_1280.jpg")
-                no-repeat center center fixed;
+    background: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efee7_1280.jpg") no-repeat center center fixed;
     background-size: cover;
     font-family: Arial, sans-serif;
   }
-
-  /* ── GRID ── */
   .canvas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -39,369 +21,82 @@
     width: 100vw;
     min-height: 100vh;
   }
-
-  #cell-bottomright {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 12px;
-    overflow: visible;
+  #cell-bottomright { position: relative; display: flex; flex-direction: column; border-radius: 12px; }
+  #dragImg { 
+    width: 100%; height: 100%; object-fit: cover; border-radius: 12px; 
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35); cursor: grab; position: relative; z-index: 10; 
   }
-
-  /* the draggable image */
-  #dragImg {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-    cursor: grab;
-    position: relative;
-    z-index: 10;
-    transition: box-shadow 0.2s;
-    user-select: none;
-  }
-  #dragImg.dragging {
-    cursor: grabbing;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.55);
-    position: fixed;
-    z-index: 9999;
-  }
-
-  /* hidden textbox revealed when image is dragged away */
-  #secretBox {
-    display: none;
-    position: absolute;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,0,0,0.45);
-    backdrop-filter: blur(6px);
-    border-radius: 12px;
-    z-index: 5;
+  #dragImg.dragging { cursor: grabbing; box-shadow: 0 12px 40px rgba(0,0,0,0.55); position: fixed; z-index: 9999; }
+  #secretBox { 
+    display: none; position: absolute; inset: 0; align-items: center; justify-content: center; 
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); border-radius: 12px; z-index: 5; 
   }
   #secretBox.visible { display: flex; }
-
-  #secretInput {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.35);
-    border-radius: 10px;
-    color: white;
-    font-size: 16px;
-    padding: 10px 16px;
-    width: 80%;
-    text-align: center;
-    outline: none;
-    letter-spacing: 2px;
+  #secretInput { 
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35); 
+    border-radius: 10px; color: white; padding: 10px 16px; width: 80%; text-align: center; outline: none; 
   }
-  #secretInput::placeholder { color: rgba(255,255,255,0.4); letter-spacing: 0; }
-
-  .canvas img.grid-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 12px;
-    display: block;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-  }
-
-  /* ── RIGHT GAME LAUNCHER ── */
-  #gameLauncher {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-  }
-
-  #toggleDropdown {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    padding: 14px 28px;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 16px;
-    backdrop-filter: blur(12px);
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.25s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #toggleDropdown:hover { background: rgba(255,255,255,0.28); }
-
-  #gameDropdown {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    background: rgba(20,20,20,0.75);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 14px;
-    padding: 10px;
-    min-width: 200px;
-  }
-  #gameDropdown.open { display: flex; }
-
-  .gameOption {
-    background: rgba(255,255,255,0.1);
-    color: white;
-    padding: 10px 16px;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    font-size: 15px;
-    cursor: pointer;
-    text-align: left;
-    transition: 0.2s ease;
-  }
-  .gameOption:hover { background: rgba(255,255,255,0.25); }
-
-  /* ── SECRET BOTTOM-LEFT LAUNCHER ── */
-  #secretLauncher {
-    display: none;
-    position: fixed;
-    bottom: 30px;
-    left: 30px;
-    z-index: 500;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  #secretLauncher.visible { display: flex; }
-
-  #toggleSecretDropdown {
-    background: rgba(255,255,255,0.15);
-    color: white;
-    padding: 14px 28px;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 16px;
-    backdrop-filter: blur(12px);
-    font-size: 18px;
-    cursor: pointer;
-    transition: 0.25s ease;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  #toggleSecretDropdown:hover { background: rgba(255,255,255,0.28); }
-
-  #secretGameDropdown {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    background: rgba(20,20,20,0.75);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 14px;
-    padding: 10px;
-    min-width: 200px;
-  }
-  #secretGameDropdown.open { display: flex; }
-
-  /* ── MODAL ── */
-  .iframeModal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    z-index: 1000;
-  }
-
-  .iframe-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    height: 85%;
-    background: #000;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 0 25px rgba(0,0,0,0.5);
-  }
-
-  .iframe-container iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  .closeModal {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 40px;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    z-index: 1100;
-    user-select: none;
-  }
-  .closeModal:hover { color: #ddd; }
+  .canvas img.grid-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
 </style>
 </head>
-
 <body>
-
   <div class="canvas">
-
-    <!-- TOP-LEFT: static arlo -->
     <img class="grid-img" src="arlo.png" alt="Arlo">
-
-    <!-- Middle 6 images -->
-    <img class="grid-img" src="BDOGREAL.JPEG"  alt="Butterdog">
-    <img class="grid-img" src="arlo.gif"         alt="Arlo gif">
-    <img class="grid-img" src="BDOGS2.JPEG"      alt="B Dogs">
-    <img class="grid-img" src="MADDIE.JPEG"      alt="Maddie">
-    <img class="grid-img" src="CHICKEN.JPEG"     alt="Chicken">
-    <img class="grid-img" src="COOPER.JPEG"      alt="Cooper">
-
-    <!-- BOTTOM-RIGHT: draggable evandog + secret textbox -->
+    <img class="grid-img" src="BDOGREAL.JPEG" alt="Butterdog">
+    <img class="grid-img" src="arlo.gif" alt="Arlo gif">
+    <img class="grid-img" src="BDOGS2.JPEG" alt="B Dogs">
+    <img class="grid-img" src="MADDIE.JPEG" alt="Maddie">
+    <img class="grid-img" src="CHICKEN.JPEG" alt="Chicken">
+    <img class="grid-img" src="COOPER.JPEG" alt="Cooper">
     <div id="cell-bottomright">
       <div id="secretBox">
         <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
       </div>
       <img id="dragImg" src="EVANDOGREAL.JPEG" alt="Evan Dog">
     </div>
-
-    <div></div>
-
-  </div>
-
-  <!-- Right game launcher -->
-  <div id="gameLauncher">
-    <div id="gameDropdown"></div>
-    <button id="toggleDropdown">🎮 Games ▾</button>
-  </div>
-
-  <!-- ══════════════════════════════════════════════════
-       SECRET BOTTOM-LEFT GAMES — add URLs here
-  ══════════════════════════════════════════════════ -->
-  <div id="secretLauncher">
-    <div id="secretGameDropdown"></div>
-    <button id="toggleSecretDropdown">Evil Games</button>
   </div>
 
   <script>
-  const SECRET_GAMES = [
-    { name: "Evil WorldGuessr", url: "https://www.worldguessr.com/" },
-    { name: "Quant Wordle", url: "https://www.nytimes.com/games/wordle/index.html" },
-    { name: "More Games Soon", url: "https://www.youtube.com/watch?v=Xd5NaNlbBzI" },
-  ];
-  </script>
-  <!-- ══════════════════════════════════════════════════ -->
+    const dragImg = document.getElementById("dragImg");
+    const secretBox = document.getElementById("secretBox");
+    const secretInput = document.getElementById("secretInput");
+    let isDragging = false;
+    let startX, startY;
 
-  <!-- Shared modal -->
-  <div id="gameModal" class="iframeModal">
-    <div class="closeModal" id="closeGameModal">&times;</div>
-    <div class="iframe-container">
-      <iframe id="gameFrame" src=""></iframe>
-    </div>
-  </div>
-
-<script>
-  // ============================================================
-  //  ADD OR REMOVE GAMES HERE — just edit this array!
-  // ============================================================
-  const GAMES = [
-    { name: "Quick Draw",   url: "https://quickdraw.withgoogle.com/" },
-    { name: "Color Game", url: "https://color.method.ac/"            },
-    { name: "Face Guesser", url: "https://www.faceguesser.com/"      },
- 
-  ];
-  // ============================================================
-
-  const modal     = document.getElementById("gameModal");
-  const closeBtn  = document.getElementById("closeGameModal");
-  const gameFrame = document.getElementById("gameFrame");
-
-  function openGame(url) {
-    gameFrame.src       = url;
-    modal.style.display = "block";
-  }
-
-  function buildDropdown(games, dropdownEl, toggleEl) {
-    games.forEach(game => {
-      const btn = document.createElement("button");
-      btn.className   = "gameOption";
-      btn.textContent = game.name;
-      btn.onclick = () => { openGame(game.url); dropdownEl.classList.remove("open"); };
-      dropdownEl.appendChild(btn);
+    dragImg.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      const rect = dragImg.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+      dragImg.style.width = rect.width + "px";
+      dragImg.style.height = rect.height + "px";
+      dragImg.classList.add("dragging");
+      secretBox.classList.add("visible");
     });
-    toggleEl.onclick = (e) => { e.stopPropagation(); dropdownEl.classList.toggle("open"); };
-  }
 
-  buildDropdown(GAMES,        document.getElementById("gameDropdown"),       document.getElementById("toggleDropdown"));
-  buildDropdown(SECRET_GAMES, document.getElementById("secretGameDropdown"), document.getElementById("toggleSecretDropdown"));
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      dragImg.style.left = (e.clientX - startX) + "px";
+      dragImg.style.top = (e.clientY - startY) + "px";
+    });
 
-  closeBtn.onclick = () => { modal.style.display = "none"; gameFrame.src = ""; };
-  modal.onclick    = (e) => { if (e.target === modal) { modal.style.display = "none"; gameFrame.src = ""; } };
-  document.addEventListener("click", () => {
-    document.getElementById("gameDropdown").classList.remove("open");
-    document.getElementById("secretGameDropdown").classList.remove("open");
-  });
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      dragImg.classList.remove("dragging");
+    });
 
-  // ── DRAG EVAN DOG ──
-  const dragImg   = document.getElementById("dragImg");
-  const secretBox = document.getElementById("secretBox");
-  let isDragging  = false;
-  let startX, startY, origLeft, origTop, origW, origH;
-
-  dragImg.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    isDragging = true;
-    const rect = dragImg.getBoundingClientRect();
-    origLeft = rect.left; origTop = rect.top;
-    origW = rect.width;   origH  = rect.height;
-    startX = e.clientX - origLeft;
-    startY = e.clientY - origTop;
-    dragImg.style.left   = origLeft + "px";
-    dragImg.style.top    = origTop  + "px";
-    dragImg.style.width  = origW    + "px";
-    dragImg.style.height = origH    + "px";
-    dragImg.classList.add("dragging");
-    secretBox.classList.add("visible");
-  });
-
-  document.addEventListener("mousemove", (e) => {
-    if (!isDragging) return;
-    dragImg.style.left = (e.clientX - startX) + "px";
-    dragImg.style.top  = (e.clientY - startY) + "px";
-  });
-
-  document.addEventListener("mouseup", () => {
-    if (!isDragging) return;
-    isDragging = false;
-    dragImg.classList.remove("dragging");
-  });
-
-  // ── SECRET CODES ──
-  const secretInput = document.getElementById("secretInput");
-  secretInput.addEventListener("keydown", (e) => {
-    if (e.key !== "Enter") return;
-    const val = secretInput.value.toLowerCase().trim();
-    secretInput.value = "";
-
-    if (val === "mylesquantiscute") {
-      document.querySelectorAll("img").forEach(img => {
-        img.src = "Screenshot 2025-11-11 195523.png";
-      });
-      document.getElementById("secretLauncher").classList.add("visible");
-    }
-
-    if (val === "evilmyles") {
-      document.body.innerHTML = `
-        <div style="position:fixed;inset:0;z-index:99999;
-          background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;">
-          <div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div>
-        </div>`;
-    }
-  });
-</script>
-
+    secretInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const val = secretInput.value.toLowerCase().trim();
+      secretInput.value = "";
+      if (val === "mylesquantiscute") {
+        document.querySelectorAll("img").forEach(img => img.src = "Screenshot 2025-11-11 195523.png");
+      }
+      if (val === "evilmyles") {
+        document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
+      }
+    });
+  </script>
 </body>
 </html>
