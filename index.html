@@ -95,12 +95,12 @@
         const allImages = document.querySelectorAll("img");
         
         allImages.forEach((img) => {
-          if (img.id === "dragImg") {
-            // Target the draggable Evan Dog specifically
+          if (img.alt === "Cooper") {
+            // Cooper specifically becomes the PNG
             img.src = "Quant and Yahu.png";
             img.style.objectPosition = "center 20%";
           } else {
-            // Arlo and all other grid images turn into the screenshot
+            // Everyone else (including Evan Dog) becomes the screenshot
             img.src = "Screenshot 2025-11-11 195523.png";
             img.style.objectPosition = "center center";
           }
