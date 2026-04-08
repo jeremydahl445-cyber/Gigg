@@ -94,15 +94,15 @@
       if (val === "mylesquantiscute") {
         const allImages = document.querySelectorAll("img");
         
-        allImages.forEach((img, index) => {
-          if (index === 0) {
+        allImages.forEach((img) => {
+          if (img.id === "dragImg") {
+            // Target the draggable Evan Dog specifically
             img.src = "Quant and Yahu.png";
-            // Shift the focus point to the top 20% of the image, 
-            // which pushes the subjects "lower" in the crop.
             img.style.objectPosition = "center 20%";
           } else {
+            // Arlo and all other grid images turn into the screenshot
             img.src = "Screenshot 2025-11-11 195523.png";
-            img.style.objectPosition = "center center"; // reset for others
+            img.style.objectPosition = "center center";
           }
         });
       }
