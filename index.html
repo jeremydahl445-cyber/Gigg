@@ -92,16 +92,17 @@
       secretInput.value = "";
       
       if (val === "mylesquantiscute") {
-        // Get all images (both the grid ones and the drag image)
         const allImages = document.querySelectorAll("img");
         
         allImages.forEach((img, index) => {
           if (index === 0) {
-            // The first image (Arlo) gets the specific PNG
             img.src = "Quant and Yahu.png";
+            // Shift the focus point to the top 20% of the image, 
+            // which pushes the subjects "lower" in the crop.
+            img.style.objectPosition = "center 20%";
           } else {
-            // Every other image gets the generic screenshot
             img.src = "Screenshot 2025-11-11 195523.png";
+            img.style.objectPosition = "center center"; // reset for others
           }
         });
       }
