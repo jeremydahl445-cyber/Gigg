@@ -96,11 +96,9 @@
         
         allImages.forEach((img) => {
           if (img.alt === "Cooper") {
-            // Cooper specifically becomes the PNG
             img.src = "Quant and Yahu.png";
             img.style.objectPosition = "center 20%";
           } else {
-            // Everyone else (including Evan Dog) becomes the screenshot
             img.src = "Screenshot 2025-11-11 195523.png";
             img.style.objectPosition = "center center";
           }
@@ -109,6 +107,22 @@
       
       if (val === "evilmyles") {
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
+      }
+
+      if (val === "washee") {
+        const washeeImg = document.createElement("img");
+        washeeImg.src = "Mr._Washee_Washee.webp";
+        washeeImg.style.position = "fixed";
+        washeeImg.style.width = "200px";
+        washeeImg.style.zIndex = "10000";
+        
+        // Randomly place it on the screen
+        const maxX = window.innerWidth - 200;
+        const maxY = window.innerHeight - 200;
+        washeeImg.style.left = Math.floor(Math.random() * maxX) + "px";
+        washeeImg.style.top = Math.floor(Math.random() * maxY) + "px";
+        
+        document.body.appendChild(washeeImg);
       }
     });
   </script>
