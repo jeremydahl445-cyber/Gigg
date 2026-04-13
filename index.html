@@ -56,8 +56,8 @@
   .canvas img.grid-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
   
   @keyframes rainbowCycle {
-    0% { filter: hue-rotate(0deg) drop-shadow(0 0 15px white); }
-    100% { filter: hue-rotate(360deg) drop-shadow(0 0 15px white); }
+    0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
+    100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
   }
 
   @keyframes spinChicken {
@@ -166,20 +166,24 @@
         chickenImg.style.position = "absolute";
         chickenImg.style.zIndex = "10000";
         
-        let size = 200;
+        let size = 400;
         const roll = Math.random();
 
         if (roll <= (1 / 150)) {
-          size = 400;
+          // Spinning variant — doubled from 400 to 800
+          size = 800;
           chickenImg.style.animation = "spinChicken 1s linear infinite";
         } else if (roll <= (1 / 100)) {
-          size = 400;
+          // Rainbow variant — doubled from 400 to 800, fully rainbow tinted
+          size = 800;
           chickenImg.style.animation = "rainbowCycle 2s linear infinite";
         } else if (roll <= (1 / 15)) {
-          size = 250;
+          // Gold variant — doubled from 250 to 500
+          size = 500;
           chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)";
         } else {
-          size = 200;
+          // Normal variant — doubled from 200 to 400
+          size = 400;
         }
 
         chickenImg.style.width = size + "px";
