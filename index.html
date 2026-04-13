@@ -25,7 +25,7 @@
   .canvas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, calc((100vw - 40px) / 3 * 0.75));
+    grid-template-rows: repeat(4, calc((100vw - 40px) / 3 * 0.75));
     gap: 10px;
     padding: 10px;
     width: 100vw;
@@ -53,7 +53,7 @@
     border-radius: 10px; color: white; padding: 10px 16px; width: 80%; text-align: center; outline: none; 
   }
 
-  .canvas img.grid-img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
+  .canvas img.grid-img { width: 100%; height: 100%; object-fit: cover; object-position: center center; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
   
   @keyframes rainbowCycle {
     0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
@@ -75,6 +75,9 @@
     <img class="grid-img" src="MADDIE.JPEG" alt="Maddie">
     <img class="grid-img" src="CHICKEN.JPEG" alt="Chicken">
     <img class="grid-img" src="COOPER.JPEG" alt="Cooper">
+    <img class="grid-img" src="BENCAT1.JPEG" alt="Ben Cat 1" style="object-position: center center;">
+    <img class="grid-img" src="BENCAT2.JPEG" alt="Ben Cat 2" style="object-position: center center;">
+    <img class="grid-img" src="BENDOG.JPEG" alt="Ben Dog" style="object-position: center center;">
     <div id="cell-bottomright">
       <div id="secretBox">
         <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
@@ -170,19 +173,15 @@
         const roll = Math.random();
 
         if (roll <= (1 / 150)) {
-          // Spinning variant — doubled from 400 to 800
           size = 800;
           chickenImg.style.animation = "spinChicken 1s linear infinite";
         } else if (roll <= (1 / 100)) {
-          // Rainbow variant — doubled from 400 to 800, fully rainbow tinted
           size = 800;
           chickenImg.style.animation = "rainbowCycle 2s linear infinite";
         } else if (roll <= (1 / 15)) {
-          // Gold variant — doubled from 250 to 500
           size = 500;
           chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)";
         } else {
-          // Normal variant — doubled from 200 to 400
           size = 400;
         }
 
