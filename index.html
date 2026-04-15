@@ -160,42 +160,34 @@
         const roll = Math.random();
         if (roll <= 0.01) {
           currentWidth = 500;
-          washeeImg.style.animation = "rainbowCycle 2s linear infinite";
-          washeeImg.style.filter = "saturate(8) brightness(1.1)";
-          const wrapper = document.createElement("div");
-          wrapper.style.cssText = `position:absolute;z-index:10000;width:${currentWidth}px;height:${currentWidth}px;`;
-          const overlay = document.createElement("div");
-          overlay.style.cssText = `position:absolute;inset:0;border-radius:8px;mix-blend-mode:hue;animation:rainbowBg 2s linear infinite;background:red;opacity:0.85;pointer-events:none;`;
-          const maxX = window.innerWidth - currentWidth;
-          const maxY = window.innerHeight - currentWidth;
-          wrapper.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-          wrapper.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-          washeeImg.style.position = "relative";
-          washeeImg.style.width = "100%";
-          washeeImg.style.height = "100%";
-          washeeImg.style.left = "";
-          washeeImg.style.top = "";
-          wrapper.appendChild(washeeImg);
-          wrapper.appendChild(overlay);
-          document.body.appendChild(wrapper);
+          washeeImg.style.width = currentWidth + "px";
+          washeeImg.style.filter = "hue-rotate(0deg) saturate(8) brightness(1.1)";
+          let hue = 0;
+          const hueInterval = setInterval(() => {
+            hue = (hue + 1) % 360;
+            washeeImg.style.filter = `hue-rotate(${hue}deg) saturate(8) brightness(1.1)`;
+          }, 20);
+          setTimeout(() => clearInterval(hueInterval), 2000);
         } else if (roll <= (0.01 + (1/15))) {
           currentWidth = 250;
-          washeeImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)";
           washeeImg.style.width = currentWidth + "px";
-          const maxX = window.innerWidth - currentWidth;
-          const maxY = window.innerHeight - currentWidth;
-          washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-          washeeImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-          document.body.appendChild(washeeImg);
+          washeeImg.style.filter = "hue-rotate(0deg) sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)";
+          let hue = 0;
+          const hueInterval = setInterval(() => {
+            hue = (hue + 1) % 360;
+            washeeImg.style.filter = `hue-rotate(${hue}deg) sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)`;
+          }, 20);
+          setTimeout(() => clearInterval(hueInterval), 2000);
         } else {
           currentWidth = 200;
           washeeImg.style.width = currentWidth + "px";
-          const maxX = window.innerWidth - currentWidth;
-          const maxY = window.innerHeight - currentWidth;
-          washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-          washeeImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-          document.body.appendChild(washeeImg);
         }
+        // Position the image randomly
+        const maxX = window.innerWidth - currentWidth;
+        const maxY = window.innerHeight - currentWidth;
+        washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
+        washeeImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
+        document.body.appendChild(washeeImg);
       }
 
       if (val === "lucaschicken") {
@@ -215,37 +207,24 @@
           chickenImg.style.animation = "spinChicken 1s linear infinite";
         } else if (roll <= (1 / 100)) {
           size = 1000;
-          chickenImg.style.animation = "rainbowCycle 3s linear infinite";
-          chickenImg.style.filter = "saturate(8) brightness(1.1)";
-          const wrapper = document.createElement("div");
-          wrapper.style.cssText = `position:absolute;z-index:10000;width:${size}px;height:${size}px;`;
-          const overlay = document.createElement("div");
-          overlay.style.cssText = `position:absolute;inset:0;border-radius:8px;mix-blend-mode:hue;animation:rainbowBg 3s linear infinite;background:red;opacity:0.85;pointer-events:none;`;
-          const maxX = window.innerWidth - size;
-          const maxY = window.innerHeight - size;
-          wrapper.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-          wrapper.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-          chickenImg.style.position = "relative";
-          chickenImg.style.width = "100%";
-          chickenImg.style.height = "100%";
-          chickenImg.style.left = "";
-          chickenImg.style.top = "";
-          wrapper.appendChild(chickenImg);
-          wrapper.appendChild(overlay);
-          document.body.appendChild(wrapper);
-          return;
-        } else if (roll <= (1 / 15)) {
-          size = 500;
-          chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.1) drop-shadow(0 0 10px gold)";
+          chickenImg.style.filter = "hue-rotate(0deg) saturate(8) brightness(1.1)";
+          let hue = 0;
+          const hueInterval = setInterval(() => {
+            hue = (hue + 1) % 360;
+            chickenImg.style.filter = `hue-rotate(${hue}deg) saturate(8) brightness(1.1)`;
+          }, 20);
+          setTimeout(() => clearInterval(hueInterval), 3000);
         } else {
           size = 400;
         }
 
         chickenImg.style.width = size + "px";
+
         const maxX = window.innerWidth - size;
         const maxY = window.innerHeight - size;
         chickenImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
         chickenImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
+
         document.body.appendChild(chickenImg);
       }
     });
