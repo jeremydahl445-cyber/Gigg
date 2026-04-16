@@ -5,15 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Myles</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  html,  body {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  body {
     /* ⬇️ Replace YOUR_BACKGROUND_IMAGE.jpg with your actual background filename */
     background:
 url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efe
 no-repeat center center / cover;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
-  }
      
   .canvas {
     display: grid;
