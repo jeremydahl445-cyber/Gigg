@@ -197,14 +197,14 @@
           // Spinning chicken
           size = 1200;
           chickenImg.style.animation = "spinChicken 1s linear infinite";
-        } else if (roll <= (1 / 100)) {
+        } else if (roll <= (1 / 800)) {
           // Big chicken
-          size = 1000;
-        } else if (roll <= (1 / 15)) {
+          size = 2500;
+        } else if (roll <= (1 / 100)) {
           // Rainbow chicken — fully bright infinite rainbow, no background tint
           size = 750;
           chickenImg.style.animation = "rainbowCycle 0.5s linear infinite";
-        } else if (roll <= (2 / 15)) {
+        } else if (roll <= (1 / 15)) {
           // Golden chicken
           size = 750;
           chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
