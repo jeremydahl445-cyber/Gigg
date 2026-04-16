@@ -6,7 +6,6 @@
 <title>Myles</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; }
-
   html, body {
     margin: 0;
     padding: 0;
@@ -15,62 +14,46 @@
     overflow-x: hidden;
     overflow-y: auto;
   }
-
   body {
-    /* ⬇️ Replace YOUR_BACKGROUND_IMAGE.jpg with your actual background filename */
-    background: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efee7_1280.jpg") no-repeat center center / cover;
+    background: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efe") no-repeat center center / cover;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
   }
-
   .canvas {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    
     gap: 10px;
     padding: 10px;
     width: 100vw;
-    
   }
-
   .canvas > * { aspect-ratio: 1 / 1; min-width: 0; }
-
   #cell-bottomright {
     position: relative;
     display: flex;
     flex-direction: column;
     border-radius: 12px;
   }
-
   #dragImg {
     width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.35); cursor: grab; position: relative; z-index: 10;
   }
   #dragImg.dragging { cursor: grabbing; box-shadow: 0 12px 40px rgba(0,0,0,0.55); position: fixed; z-index: 9999; }
-
   #secretBox {
     display: none; position: absolute; inset: 0; align-items: center; justify-content: center;
     background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); border-radius: 12px; z-index: 5;
   }
   #secretBox.visible { display: flex; }
-
   #secretInput {
     background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35);
     border-radius: 10px; color: white; padding: 10px 16px; width: 80%; text-align: center; outline: none;
   }
-
   .canvas img.grid-img {
     width: 100%; height: 100%; object-fit: cover; object-position: center center;
     border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35);
   }
-
   @keyframes rainbowCycle {
     0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
     100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
-  }
-  @keyframes rainbowBg {
-    0%   { background-color: hsl(0,100%,50%); }
-    100% { background-color: hsl(360,100%,50%); }
   }
   @keyframes spinChicken {
     from { transform: rotate(0deg); }
@@ -90,6 +73,9 @@
     <img class="grid-img" src="BENCAT1.JPEG" alt="Ben Cat 1" style="object-position: center bottom;">
     <img class="grid-img" src="BENCAT2.JPEG" alt="Ben Cat 2" style="object-position: center center;">
     <img class="grid-img" src="BENDOG.JPEG" alt="Ben Dog" style="object-position: center center;">
+    <!-- New Image Added Below -->
+    <img class="grid-img" src="BENDOG2.JPEG" alt="Ben Dog 2" style="object-position: center center;">
+    
     <div id="cell-bottomright">
       <div id="secretBox">
         <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
@@ -132,7 +118,7 @@
       if (e.key !== "Enter") return;
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
-
+      
       if (val === "mylesquantiscute") {
         const allImages = document.querySelectorAll("img");
         allImages.forEach((img) => {
@@ -155,16 +141,13 @@
         washeeImg.src = "Mr._Washee_Washee.webp";
         washeeImg.style.position = "absolute";
         washeeImg.style.zIndex = "10000";
-
         let currentWidth = 200;
         const roll = Math.random();
         if (roll <= 0.01) {
-          // Rainbow washee — fully bright infinite rainbow, no background tint
           currentWidth = 500;
           washeeImg.style.width = currentWidth + "px";
           washeeImg.style.animation = "rainbowCycle 0.25s linear infinite";
         } else if (roll <= (0.01 + (1/15))) {
-          // Golden washee
           currentWidth = 250;
           washeeImg.style.width = currentWidth + "px";
           washeeImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
@@ -172,7 +155,6 @@
           currentWidth = 200;
           washeeImg.style.width = currentWidth + "px";
         }
-        // Position the image randomly
         const maxX = window.innerWidth - currentWidth;
         const maxY = window.innerHeight - currentWidth;
         washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
@@ -185,41 +167,25 @@
         chickenImg.src = "CHICKEN-removebg-preview.png";
         chickenImg.style.position = "absolute";
         chickenImg.style.zIndex = "10000";
-
         let size = 400;
         const roll = Math.random();
-
         if (roll <= (1 / 500)) {
-          // Platinum chicken
           size = 2000;
           chickenImg.style.filter = "grayscale(1) brightness(1.6) contrast(1.2) drop-shadow(0 0 30px rgba(255,255,255,0.9))";
         } else if (roll <= (1 / 150)) {
-          // Spinning chicken
           size = 1200;
           chickenImg.style.animation = "spinChicken 1s linear infinite";
-        } else if (roll <= (1 / 1000)) {
-          // Big chicken
-          size = 3500;
-        } else if (roll <= (1 / 100)) {
-          // Rainbow chicken — fully bright infinite rainbow, no background tint
-          size = 1000;
-          chickenImg.style.animation = "rainbowCycle 0.5s linear infinite";
         } else if (roll <= (1 / 15)) {
-          // Golden chicken
           size = 650;
           chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
         } else {
-          // Normal chicken
           size = 400;
         }
-
         chickenImg.style.width = size + "px";
-
         const maxX = window.innerWidth - size;
         const maxY = window.innerHeight - size;
         chickenImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
         chickenImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-
         document.body.appendChild(chickenImg);
       }
     });
