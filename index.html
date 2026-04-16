@@ -13,7 +13,7 @@
     height: 100%;
     overflow-x: hidden;
     overflow-y: auto;
-  }
+  }
   body {
     /* ⬇️ Replace YOUR_BACKGROUND_IMAGE.jpg with your actual background filename */
     background:
@@ -21,177 +21,185 @@ url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a2476
 no-repeat center center / cover;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
-     
-  .canvas {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    padding: 10px;
-    width: 100vw;
-  }
-  .canvas > * { aspect-ratio: 1 / 1; min-width: 0; }
-  #cell-bottomright {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    border-radius: 12px;
-  }
-  #dragImg {
-    width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.35); cursor: grab; position: relative; z-index: 10;
-  }
-  #dragImg.dragging { cursor: grabbing; box-shadow: 0 12px 40px rgba(0,0,0,0.55); position: fixed; z-index: 9999; }
-  #secretBox {
-    display: none; position: absolute; inset: 0; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); border-radius: 12px; z-index: 5;
-  }
-  #secretBox.visible { display: flex; }
-  #secretInput {
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35);
-    border-radius: 10px; color: white; padding: 10px 16px; width: 80%; text-align: center; outline: none;
-  }
-  .canvas img.grid-img {
-    width: 100%; height: 100%; object-fit: cover; object-position: center center;
-    border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35);
-  }
-  @keyframes rainbowCycle {
-    0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
-    100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
-  }
-  @keyframes spinChicken {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
+  }
+  .canvas {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    
+    gap: 10px;
+    padding: 10px;
+    width: 100vw;
+    
+  }
+  .canvas > * { aspect-ratio: 1 / 1; min-width: 0; }
+  #cell-bottomright {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+  }
+  #dragImg {
+    width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.35); cursor: grab; position: relative; z-index: 10;
+  }
+  #dragImg.dragging { cursor: grabbing; box-shadow: 0 12px 40px rgba(0,0,0,0.55); position: fixed; z-index: 9999; }
+  #secretBox {
+    display: none; position: absolute; inset: 0; align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(6px); border-radius: 12px; z-index: 5;
+  }
+  #secretBox.visible { display: flex; }
+  #secretInput {
+    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 10px; color: white; padding: 10px 16px; width: 80%; text-align: center; outline: none;
+  }
+  .canvas img.grid-img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center center;
+    border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35);
+  }
+  @keyframes rainbowCycle {
+    0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
+    100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
+  }
+  @keyframes rainbowBg {
+    0%   { background-color: hsl(0,100%,50%); }
+    100% { background-color: hsl(360,100%,50%); }
+  }
+  @keyframes spinChicken {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
-  <div class="canvas">
-    <img class="grid-img" src="arlo.png" alt="Arlo">
-    <img class="grid-img" src="BDOGREAL.JPEG" alt="Butterdog">
-    <img class="grid-img" src="arlo.gif" alt="Arlo gif">
-    <img class="grid-img" src="BDOGS2.JPEG" alt="B Dogs">
-    <img class="grid-img" src="MADDIE.JPEG" alt="Maddie">
-    <img class="grid-img" src="CHICKEN.JPEG" alt="Chicken">
-    <img class="grid-img" src="COOPER.JPEG" alt="Cooper">
-    <img class="grid-img" src="BENCAT1.JPEG" alt="Ben Cat 1" style="object-position: center bottom;">
-    <img class="grid-img" src="BENCAT2.JPEG" alt="Ben Cat 2" style="object-position: center center;">
-    <img class="grid-img" src="BENDOG.JPEG" alt="Ben Dog" style="object-position: center center;">
-    <!-- New Image Added Below -->
-    <img class="grid-img" src="BENDOG2.png" alt="Ben Dog 2" style="object-position: center center;">
-    
-    <div id="cell-bottomright">
-      <div id="secretBox">
-        <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
-      </div>
-      <img id="dragImg" src="EVANDOGREAL.JPEG" alt="Evan Dog">
-    </div>
-  </div>
-
-  <script>
-    const dragImg = document.getElementById("dragImg");
-    const secretBox = document.getElementById("secretBox");
-    const secretInput = document.getElementById("secretInput");
-    let isDragging = false;
-    let startX, startY;
-
-    dragImg.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      isDragging = true;
-      const rect = dragImg.getBoundingClientRect();
-      startX = e.clientX - rect.left;
-      startY = e.clientY - rect.top;
-      dragImg.style.width = rect.width + "px";
-      dragImg.style.height = rect.height + "px";
-      dragImg.classList.add("dragging");
-      secretBox.classList.add("visible");
-    });
-
-    document.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      dragImg.style.left = (e.clientX - startX) + "px";
-      dragImg.style.top = (e.clientY - startY) + "px";
-    });
-
-    document.addEventListener("mouseup", () => {
-      isDragging = false;
-      dragImg.classList.remove("dragging");
-    });
-
-    secretInput.addEventListener("keydown", (e) => {
-      if (e.key !== "Enter") return;
-      const val = secretInput.value.toLowerCase().trim();
-      secretInput.value = "";
-      
-      if (val === "mylesquantiscute") {
-        const allImages = document.querySelectorAll("img");
-        allImages.forEach((img) => {
-          if (img.alt === "Cooper") {
-            img.src = "Quant and Yahu.png";
-            img.style.objectPosition = "center 20%";
-          } else {
-            img.src = "Screenshot 2025-11-11 195523.png";
-            img.style.objectPosition = "center center";
-          }
-        });
-      }
-
-      if (val === "evilmyles") {
-        document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
-      }
-
-      if (val === "washee") {
-        const washeeImg = document.createElement("img");
-        washeeImg.src = "Mr._Washee_Washee.webp";
-        washeeImg.style.position = "absolute";
-        washeeImg.style.zIndex = "10000";
-        let currentWidth = 200;
-        const roll = Math.random();
-        if (roll <= 0.01) {
-          currentWidth = 500;
-          washeeImg.style.width = currentWidth + "px";
-          washeeImg.style.animation = "rainbowCycle 0.25s linear infinite";
-        } else if (roll <= (0.01 + (1/15))) {
-          currentWidth = 250;
-          washeeImg.style.width = currentWidth + "px";
-          washeeImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
-        } else {
-          currentWidth = 200;
-          washeeImg.style.width = currentWidth + "px";
-        }
-        const maxX = window.innerWidth - currentWidth;
-        const maxY = window.innerHeight - currentWidth;
-        washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-        washeeImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-        document.body.appendChild(washeeImg);
-      }
-
-      if (val === "lucaschicken") {
-        const chickenImg = document.createElement("img");
-        chickenImg.src = "CHICKEN-removebg-preview.png";
-        chickenImg.style.position = "absolute";
-        chickenImg.style.zIndex = "10000";
-        let size = 400;
-        const roll = Math.random();
-        if (roll <= (1 / 500)) {
-          size = 2000;
-          chickenImg.style.filter = "grayscale(1) brightness(1.6) contrast(1.2) drop-shadow(0 0 30px rgba(255,255,255,0.9))";
-        } else if (roll <= (1 / 150)) {
-          size = 1200;
-          chickenImg.style.animation = "spinChicken 1s linear infinite";
-        } else if (roll <= (1 / 15)) {
-          size = 650;
-          chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
-        } else {
-          size = 400;
-        }
-        chickenImg.style.width = size + "px";
-        const maxX = window.innerWidth - size;
-        const maxY = window.innerHeight - size;
-        chickenImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
-        chickenImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
-        document.body.appendChild(chickenImg);
-      }
-    });
-  </script>
+  <div class="canvas">
+    <img class="grid-img" src="arlo.png" alt="Arlo">
+    <img class="grid-img" src="BDOGREAL.JPEG" alt="Butterdog">
+    <img class="grid-img" src="arlo.gif" alt="Arlo gif">
+    <img class="grid-img" src="BDOGS2.JPEG" alt="B Dogs">
+    <img class="grid-img" src="MADDIE.JPEG" alt="Maddie">
+    <img class="grid-img" src="CHICKEN.JPEG" alt="Chicken">
+    <img class="grid-img" src="COOPER.JPEG" alt="Cooper">
+    <img class="grid-img" src="BENCAT1.JPEG" alt="Ben Cat 1" style="object-position: center bottom;">
+    <img class="grid-img" src="BENCAT2.JPEG" alt="Ben Cat 2" style="object-position: center center;">
+    <img class="grid-img" src="BENDOG.JPEG" alt="Ben Dog" style="object-position: center center;">
+     <img class="grid-img" src="BENDOG2.png" alt="Ben Dog2" style="object-position: center center;">
+    <div id="cell-bottomright">
+      <div id="secretBox">
+        <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
+      </div>
+      <img id="dragImg" src="EVANDOGREAL.JPEG" alt="Evan Dog">
+    </div>
+  </div>
+  <script>
+    const dragImg = document.getElementById("dragImg");
+    const secretBox = document.getElementById("secretBox");
+    const secretInput = document.getElementById("secretInput");
+    let isDragging = false;
+    let startX, startY;
+    dragImg.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      isDragging = true;
+      const rect = dragImg.getBoundingClientRect();
+      startX = e.clientX - rect.left;
+      startY = e.clientY - rect.top;
+      dragImg.style.width = rect.width + "px";
+      dragImg.style.height = rect.height + "px";
+      dragImg.classList.add("dragging");
+      secretBox.classList.add("visible");
+    });
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      dragImg.style.left = (e.clientX - startX) + "px";
+      dragImg.style.top = (e.clientY - startY) + "px";
+    });
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      dragImg.classList.remove("dragging");
+    });
+    secretInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const val = secretInput.value.toLowerCase().trim();
+      secretInput.value = "";
+      if (val === "mylesquantiscute") {
+        const allImages = document.querySelectorAll("img");
+        allImages.forEach((img) => {
+          if (img.alt === "Cooper") {
+            img.src = "Quant and Yahu.png";
+            img.style.objectPosition = "center 20%";
+          } else {
+            img.src = "Screenshot 2025-11-11 195523.png";
+            img.style.objectPosition = "center center";
+          }
+        });
+      }
+      if (val === "evilmyles") {
+        document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no￾repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
+      }
+      if (val === "washee") {
+        const washeeImg = document.createElement("img");
+        washeeImg.src = "Mr._Washee_Washee.webp";
+        washeeImg.style.position = "absolute";
+        washeeImg.style.zIndex = "10000";
+        let currentWidth = 200;
+        const roll = Math.random();
+        if (roll <= 0.01) {
+          // Rainbow washee — fully bright infinite rainbow, no background tint
+          currentWidth = 500;
+          washeeImg.style.width = currentWidth + "px";
+          washeeImg.style.animation = "rainbowCycle 0.25s linear infinite";
+        } else if (roll <= (0.01 + (1/15))) {
+          // Golden washee
+          currentWidth = 250;
+          washeeImg.style.width = currentWidth + "px";
+          washeeImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
+        } else {
+          currentWidth = 200;
+          washeeImg.style.width = currentWidth + "px";
+        }
+        // Position the image randomly
+        const maxX = window.innerWidth - currentWidth;
+        const maxY = window.innerHeight - currentWidth;
+        washeeImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
+        washeeImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
+        document.body.appendChild(washeeImg);
+      }
+      if (val === "lucaschicken") {
+        const chickenImg = document.createElement("img");
+        chickenImg.src = "CHICKEN-removebg-preview.png";
+        chickenImg.style.position = "absolute";
+        chickenImg.style.zIndex = "10000";
+        let size = 400;
+        const roll = Math.random();
+        if (roll <= (1 / 500)) {
+          // Platinum chicken
+          size = 2000;
+          chickenImg.style.filter = "grayscale(1) brightness(1.6) contrast(1.2) drop-shadow(0 0 30px rgba(255,255,255,0.9))";
+        } else if (roll <= (1 / 150)) {
+          // Spinning chicken
+          size = 1200;
+          chickenImg.style.animation = "spinChicken 1s linear infinite";
+        } else if (roll <= (1 / 1000)) {
+          // Big chicken
+          size = 3500;
+        } else if (roll <= (1 / 100)) {
+          // Rainbow chicken — fully bright infinite rainbow, no background tint
+          size = 1000;
+          chickenImg.style.animation = "rainbowCycle 0.5s linear infinite";
+        } else if (roll <= (1 / 15)) {
+          // Golden chicken
+          size = 650;
+          chickenImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
+        } else {
+          // Normal chicken
+          size = 400;
+        }
+        chickenImg.style.width = size + "px";
+        const maxX = window.innerWidth - size;
+        const maxY = window.innerHeight - size;
+        chickenImg.style.left = Math.max(0, Math.floor(Math.random() * maxX)) + "px";
+        chickenImg.style.top = Math.max(0, Math.floor(Math.random() * maxY) + window.scrollY) + "px";
+        document.body.appendChild(chickenImg);
+      }
+    });
+  </script>
 </body>
-</html>
