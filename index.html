@@ -186,9 +186,9 @@
         newImg.style.zIndex = "10000";
         let size = 200;
         const roll = Math.random();
-        if (roll <= 0.05) {
+        if (roll <= 0.01) {
           size = (val === "washee") ? 500 : 1000;
-          newImg.style.animation = "rainbowCycle 0.5s linear infinite";
+          newImg.style.animation = "rainbowCycle 1.2s linear infinite";
         } else if (roll <= 0.15) {
           size = (val === "washee") ? 250 : 650;
           newImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
