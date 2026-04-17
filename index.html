@@ -6,7 +6,6 @@
   <title>Myles</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -14,8 +13,8 @@
       height: 100%;
       overflow-x: hidden;
     }
-
     body {
+      /* FIXED: Background URL closed correctly */
       background-image: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efe");
       background-size: cover;
       background-position: center center;
@@ -25,38 +24,25 @@
       min-height: 100vh;
     }
 
-    /* Responsive grid: fills the viewport, images scale to screen */
     .canvas {
       display: grid;
-      gap: clamp(6px, 1.5vw, 14px);
-      padding: clamp(8px, 2vw, 20px);
+      /* FIXED: Set to 3 equal columns that stretch to fill the screen */
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 10px;
       width: 100%;
-      max-width: 100vw;
-
-      /* Auto-fit columns so they always fill the available width */
-      grid-template-columns: repeat(auto-fit, minmax(clamp(80px, 25vw, 200px), 1fr));
+      /* Removed max-width so images can be much bigger */
     }
 
-    /* Force a consistent 3-column layout on anything tablet-sized and up */
-    @media (min-width: 480px) {
+    /* Keeps it 1 column on very small mobile screens for readability */
+    @media (max-width: 480px) {
       .canvas {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr;
       }
     }
 
-    /* On wide screens give a bit more room */
-    @media (min-width: 900px) {
-      .canvas {
-        grid-template-columns: repeat(4, 1fr);
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-    }
-
-    /* Each cell is square and fills its column */
     .canvas > * {
       aspect-ratio: 1 / 1;
-      min-width: 0;
       width: 100%;
     }
 
@@ -69,7 +55,7 @@
       display: block;
     }
 
-    /* ── Draggable / secret cell ── */
+    /* Draggable / secret cell */
     #cell-bottomright {
       position: relative;
       display: flex;
@@ -121,15 +107,9 @@
       font-size: clamp(12px, 2vw, 16px);
     }
 
-    /* Rainbow / spin animations */
     @keyframes rainbowCycle {
       0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
       100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
-    }
-
-    @keyframes spinChicken {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -190,7 +170,6 @@
       if (e.key !== "Enter") return;
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
-
       if (val === "mylesquantiscute") {
         document.querySelectorAll("img").forEach(img => {
           img.src = (img.alt === "Cooper")
@@ -198,28 +177,23 @@
             : "Screenshot 2025-11-11 195523.png";
         });
       }
-
       if (val === "evilmyles") {
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
       }
-
       if (val === "washee" || val === "lucaschicken") {
         const newImg = document.createElement("img");
         newImg.src = (val === "washee") ? "Mr._Washee_Washee.webp" : "CHICKEN-removebg-preview.png";
         newImg.style.position = "absolute";
         newImg.style.zIndex   = "10000";
-
         let size = 200;
         const roll = Math.random();
-
-        if (roll <= 0.05) {          // 5% Rainbow
+        if (roll <= 0.05) {
           size = (val === "washee") ? 500 : 1000;
           newImg.style.animation = "rainbowCycle 0.5s linear infinite";
-        } else if (roll <= 0.15) {   // 10% Gold
+        } else if (roll <= 0.15) {
           size = (val === "washee") ? 250 : 650;
           newImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
         }
-
         newImg.style.width = size + "px";
         newImg.style.left  = Math.random() * (window.innerWidth  - size) + "px";
         newImg.style.top   = (Math.random() * (window.innerHeight - size) + window.scrollY) + "px";
