@@ -7,14 +7,11 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
       overflow-x: hidden;
     }
     body {
-      /* FIXED: Closed the URL properly so the background shows */
       background-image: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efe");
       background-size: cover;
       background-position: center center;
@@ -23,40 +20,24 @@
       font-family: Arial, sans-serif;
       min-height: 100vh;
     }
-
     .canvas {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      padding: 10px;
+      gap: 10px; padding: 10px;
       width: 100%;
     }
-
     @media (max-width: 480px) {
       .canvas { grid-template-columns: 1fr; }
     }
-
-    .canvas > * {
-      aspect-ratio: 1 / 1;
-      width: 100%;
-    }
-
+    .canvas > * { aspect-ratio: 1 / 1; width: 100%; }
     .grid-img {
-      width: 100%;
-      height: 100%;
+      width: 100%; height: 100%;
       object-fit: cover;
       border-radius: 12px;
       box-shadow: 0 4px 18px rgba(0,0,0,0.35);
       display: block;
     }
-
-    #cell-bottomright {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      border-radius: 12px;
-    }
-
+    #cell-bottomright { position: relative; display: flex; flex-direction: column; border-radius: 12px; }
     #dragImg {
       width: 100%; height: 100%;
       object-fit: cover;
@@ -66,7 +47,6 @@
       position: relative;
       z-index: 10;
     }
-
     #dragImg.dragging {
       cursor: grabbing;
       box-shadow: 0 12px 40px rgba(0,0,0,0.55);
@@ -74,36 +54,34 @@
       z-index: 9999;
       pointer-events: none;
     }
-
     #secretBox {
-      display: none;
-      position: absolute;
-      inset: 0;
-      align-items: center;
-      justify-content: center;
+      display: none; position: absolute; inset: 0;
+      align-items: center; justify-content: center;
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(6px);
-      border-radius: 12px;
-      z-index: 5;
+      border-radius: 12px; z-index: 5;
     }
-
     #secretBox.visible { display: flex; }
-
     #secretInput {
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 10px;
-      color: white;
-      padding: 10px;
-      width: 90%;
-      text-align: center;
-      outline: none;
+      border-radius: 10px; color: white;
+      padding: 10px; width: 90%;
+      text-align: center; outline: none;
       font-size: clamp(12px, 2vw, 16px);
     }
-
+    /* Animations */
     @keyframes rainbowCycle {
-      0%   { filter: hue-rotate(0deg)   saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
+      0%   { filter: hue-rotate(0deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
       100% { filter: hue-rotate(360deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes platinumShimmer {
+      0%, 100% { filter: grayscale(1) brightness(1.2) contrast(1.2) drop-shadow(0 0 10px #e5e4e2); }
+      50% { filter: grayscale(1) brightness(2) contrast(1.5) drop-shadow(0 0 30px #ffffff); }
     }
   </style>
 </head>
@@ -135,20 +113,22 @@
     let isDragging = false;
     let startX, startY;
 
+    // Helper for rare variant sound
+    function playRareSound() {
+      const audio = new Audio('https://fesliyanstudios.com'); // Achievement/Sparkle sound
+      audio.volume = 0.5;
+      audio.play();
+    }
+
     dragImg.addEventListener("mousedown", (e) => {
       isDragging = true;
       const rect = dragImg.getBoundingClientRect();
-      // Calculate offset based on page scroll
       startX = e.clientX - rect.left;
       startY = e.clientY - rect.top;
-      
       dragImg.style.width = rect.width + "px";
       dragImg.style.height = rect.height + "px";
-      
-      // Set initial fixed position before adding class
       dragImg.style.left = rect.left + "px";
       dragImg.style.top = rect.top + "px";
-      
       dragImg.classList.add("dragging");
       secretBox.classList.add("visible");
     });
@@ -163,7 +143,6 @@
       if (!isDragging) return;
       isDragging = false;
       dragImg.classList.remove("dragging");
-      // FIXED: Image now stays where you drop it because we don't reset to 'relative'
       dragImg.style.position = "fixed"; 
     });
 
@@ -171,28 +150,47 @@
       if (e.key !== "Enter") return;
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
+
       if (val === "mylesquantiscute") {
         document.querySelectorAll("img").forEach(img => {
           img.src = (img.alt === "Cooper") ? "Quant and Yahu.png" : "Screenshot 2025-11-11 195523.png";
         });
       }
+
       if (val === "evilmyles") {
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
       }
+
       if (val === "washee" || val === "lucaschicken") {
         const newImg = document.createElement("img");
         newImg.src = (val === "washee") ? "Mr._Washee_Washee.webp" : "CHICKEN-removebg-preview.png";
         newImg.style.position = "absolute";
         newImg.style.zIndex = "10000";
+        
         let size = 200;
         const roll = Math.random();
-        if (roll <= 0.01) {
+
+        // Shiny Platinum (1/500)
+        if (val === "lucaschicken" && roll <= 0.002) { 
+          size = 2000;
+          newImg.style.animation = "platinumShimmer 1.5s ease-in-out infinite";
+          playRareSound();
+        } 
+        // Spinning Chicken (1/150)
+        else if (val === "lucaschicken" && roll <= 0.0066) {
+          size = 1400;
+          newImg.style.animation = "spin 1s linear infinite";
+          playRareSound();
+        }
+        // Normal Variants
+        else if (roll <= 0.01) {
           size = (val === "washee") ? 500 : 1000;
           newImg.style.animation = "rainbowCycle 1.2s linear infinite";
         } else if (roll <= 0.15) {
           size = (val === "washee") ? 250 : 650;
           newImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
         }
+
         newImg.style.width = size + "px";
         newImg.style.left = Math.random() * (window.innerWidth - size) + "px";
         newImg.style.top = (Math.random() * (window.innerHeight - size) + window.scrollY) + "px";
