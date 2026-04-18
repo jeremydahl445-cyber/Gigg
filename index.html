@@ -12,6 +12,7 @@
       overflow-x: hidden;
     }
     body {
+      background-color: #1a1a2e;
       background-image: url("images/55a47e7e92a6616ffefc18cf5157fcd24e55179a5bcb82884c7d28a52218ec3a24767f620d3512135169fe67f5048493a256d289e3c00d9f9efe");
       background-size: cover;
       background-position: center center;
@@ -70,6 +71,7 @@
       text-align: center; outline: none;
       font-size: clamp(12px, 2vw, 16px);
     }
+
     /* Animations */
     @keyframes rainbowCycle {
       0%   { filter: hue-rotate(0deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
@@ -77,27 +79,34 @@
     }
     @keyframes spin {
       from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+      to   { transform: rotate(360deg); }
     }
     @keyframes platinumShimmer {
       0%, 100% { filter: grayscale(1) brightness(1.2) contrast(1.2) drop-shadow(0 0 10px #e5e4e2); }
-      50% { filter: grayscale(1) brightness(2) contrast(1.5) drop-shadow(0 0 30px #ffffff); }
+      50%       { filter: grayscale(1) brightness(2)   contrast(1.5) drop-shadow(0 0 30px #ffffff); }
     }
+
+    /*
+     * Combined animation classes used when spin and an effect animation
+     * need to run at the same time.
+     * spin only touches transform; effect animations only touch filter —
+     * so they coexist without fighting each other.
+     */
   </style>
 </head>
 <body>
   <div class="canvas">
-    <img class="grid-img" src="arlo.png" alt="Arlo">
-    <img class="grid-img" src="BDOGREAL.JPEG" alt="Butterdog">
-    <img class="grid-img" src="arlo.gif" alt="Arlo gif">
-    <img class="grid-img" src="BDOGS2.JPEG" alt="B Dogs">
-    <img class="grid-img" src="MADDIE.JPEG" alt="Maddie">
-    <img class="grid-img" src="CHICKEN.JPEG" alt="Chicken">
-    <img class="grid-img" src="COOPER.JPEG" alt="Cooper">
-    <img class="grid-img" src="BENCAT1.JPEG" alt="Ben Cat 1">
-    <img class="grid-img" src="BENCAT2.JPEG" alt="Ben Cat 2">
-    <img class="grid-img" src="BENDOG.JPEG" alt="Ben Dog">
-    <img class="grid-img" src="BENDOG2.png" alt="Ben Dog 2">
+    <img class="grid-img" src="arlo.png"          alt="Arlo">
+    <img class="grid-img" src="BDOGREAL.JPEG"     alt="Butterdog">
+    <img class="grid-img" src="arlo.gif"          alt="Arlo gif">
+    <img class="grid-img" src="BDOGS2.JPEG"       alt="B Dogs">
+    <img class="grid-img" src="MADDIE.JPEG"       alt="Maddie">
+    <img class="grid-img" src="CHICKEN.JPEG"      alt="Chicken">
+    <img class="grid-img" src="COOPER.JPEG"       alt="Cooper">
+    <img class="grid-img" src="BENCAT1.JPEG"      alt="Ben Cat 1">
+    <img class="grid-img" src="BENCAT2.JPEG"      alt="Ben Cat 2">
+    <img class="grid-img" src="BENDOG.JPEG"       alt="Ben Dog">
+    <img class="grid-img" src="BENDOG2.png"       alt="Ben Dog 2">
     <div id="cell-bottomright">
       <div id="secretBox">
         <input id="secretInput" type="text" placeholder="enter code..." autocomplete="off" />
@@ -107,28 +116,21 @@
   </div>
 
   <script>
-    const dragImg = document.getElementById("dragImg");
+    // ── Drag logic ──────────────────────────────────────────────────────────────
+    const dragImg   = document.getElementById("dragImg");
     const secretBox = document.getElementById("secretBox");
     const secretInput = document.getElementById("secretInput");
-    let isDragging = false;
-    let startX, startY;
-
-    // Helper for rare variant sound
-    function playRareSound() {
-      const audio = new Audio('https://fesliyanstudios.com'); // Achievement/Sparkle sound
-      audio.volume = 0.5;
-      audio.play();
-    }
+    let isDragging = false, startX, startY;
 
     dragImg.addEventListener("mousedown", (e) => {
       isDragging = true;
       const rect = dragImg.getBoundingClientRect();
       startX = e.clientX - rect.left;
       startY = e.clientY - rect.top;
-      dragImg.style.width = rect.width + "px";
+      dragImg.style.width  = rect.width  + "px";
       dragImg.style.height = rect.height + "px";
-      dragImg.style.left = rect.left + "px";
-      dragImg.style.top = rect.top + "px";
+      dragImg.style.left   = rect.left   + "px";
+      dragImg.style.top    = rect.top    + "px";
       dragImg.classList.add("dragging");
       secretBox.classList.add("visible");
     });
@@ -136,24 +138,35 @@
     document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
       dragImg.style.left = (e.clientX - startX) + "px";
-      dragImg.style.top = (e.clientY - startY) + "px";
+      dragImg.style.top  = (e.clientY - startY) + "px";
     });
 
     document.addEventListener("mouseup", () => {
       if (!isDragging) return;
       isDragging = false;
       dragImg.classList.remove("dragging");
-      dragImg.style.position = "fixed"; 
+      dragImg.style.position = "fixed";
     });
 
+    // ── Sound helper ────────────────────────────────────────────────────────────
+    function playRareSound() {
+      const audio = new Audio('https://fesliyanstudios.com');
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    }
+
+    // ── Secret-code handler ─────────────────────────────────────────────────────
     secretInput.addEventListener("keydown", (e) => {
       if (e.key !== "Enter") return;
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
 
+      // ── Existing Easter eggs ──────────────────────────────────────────────────
       if (val === "mylesquantiscute") {
         document.querySelectorAll("img").forEach(img => {
-          img.src = (img.alt === "Cooper") ? "Quant and Yahu.png" : "Screenshot 2025-11-11 195523.png";
+          img.src = (img.alt === "Cooper")
+            ? "Quant and Yahu.png"
+            : "Screenshot 2025-11-11 195523.png";
         });
       }
 
@@ -161,39 +174,104 @@
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
       }
 
+      // ── Washee / Luca's chicken ───────────────────────────────────────────────
       if (val === "washee" || val === "lucaschicken") {
-        const newImg = document.createElement("img");
-        newImg.src = (val === "washee") ? "Mr._Washee_Washee.webp" : "CHICKEN-removebg-preview.png";
+        const isWashee = (val === "washee");
+        const newImg   = document.createElement("img");
+        newImg.src     = isWashee ? "Mr._Washee_Washee.webp" : "CHICKEN-removebg-preview.png";
         newImg.style.position = "absolute";
-        newImg.style.zIndex = "10000";
-        
-        let size = 450;
-        const roll = Math.random();
+        newImg.style.zIndex   = "10000";
 
-        // Shiny Platinum (1/500)
-        if (val === "lucaschicken" && roll <= 0.002) { 
-          size = 2000;
-          newImg.style.animation = "platinumShimmer 1.5s ease-in-out infinite";
-          playRareSound();
-        } 
-        // Spinning Chicken (1/150)
-        else if (val === "lucaschicken" && roll <= 0.0066) {
-          size = 1400;
-          newImg.style.animation = "spin 1s linear infinite";
+        // ── Roll 1: Visual effect ─────────────────────────────────────────────
+        // Each threshold is additive so platinum, rainbow, and gold are all
+        // independently evaluated from the same single roll, giving stacking-
+        // friendly odds without inflating the total probability.
+        //
+        //  Platinum :  1/500  (chicken) | 1/750 (washee)
+        //  Rainbow  :  1/100  (both)
+        //  Gold     :  1/7    (both, ≈14.3%)
+        //  Normal   :  remainder
+        //
+        const platChance = isWashee ? (1 / 750) : (1 / 500);
+        const effectRoll = Math.random();
+        let effect;
+        if      (effectRoll < platChance)                          effect = "platinum";
+        else if (effectRoll < platChance + 1/100)                  effect = "rainbow";
+        else if (effectRoll < platChance + 1/100 + 1/7)           effect = "gold";
+        else                                                        effect = "normal";
+
+        // ── Roll 2: Size / motion type ────────────────────────────────────────
+        // Completely independent of the effect roll, so every size tier can
+        // inherit any visual effect (e.g. gold spinning, platinum large, etc.)
+        //
+        //  Spinning :  1/150  (both)
+        //  Large    :  1/850  (both)
+        //  Normal   :  remainder
+        //
+        const largeChance = 1/850;
+        const typeRoll = Math.random();
+        let type;
+        if      (typeRoll < 1/150)                    type = "spinning";
+        else if (typeRoll < 1/150 + largeChance)      type = "large";
+        else                                           type = "normal";
+
+        // ── Size ──────────────────────────────────────────────────────────────
+        // Spinning and large always use their dedicated sizes.
+        // Normal type borrows the classic per-effect sizes from the original code.
+        let size;
+        if (type === "spinning") {
+          size = isWashee ? 750 : 1400;
+        } else if (type === "large") {
+          size = isWashee ? 700 : 1200;
+        } else {
+          // normal type — vary size by rarity to preserve original feel
+          if      (effect === "platinum") size = isWashee ? 600  : 2000;
+          else if (effect === "rainbow")  size = isWashee ? 500  : 1000;
+          else if (effect === "gold")     size = isWashee ? 250  : 650;
+          else                            size = isWashee ? 450  : 450;
+        }
+
+        // ── Apply animations ──────────────────────────────────────────────────
+        // spin        → only animates `transform`
+        // rainbowCycle / platinumShimmer → only animate `filter`
+        // They do NOT conflict, so comma-separated animations work perfectly.
+        const animations = [];
+
+        if (type === "spinning") {
+          animations.push("spin 1s linear infinite");
+        }
+
+        if (effect === "platinum") {
+          animations.push("platinumShimmer 1.5s ease-in-out infinite");
+        } else if (effect === "rainbow") {
+          animations.push("rainbowCycle 1.2s linear infinite");
+        } else if (effect === "gold") {
+          // Gold uses a static CSS filter — compatible with `spin` animation
+          // because spin only touches `transform`.
+          newImg.style.filter =
+            "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
+        }
+
+        if (animations.length > 0) {
+          newImg.style.animation = animations.join(", ");
+        }
+
+        // ── Rare sound ────────────────────────────────────────────────────────
+        // Fires only for variants rarer than 1/125:
+        //   platinum → 1/500 (chicken) | 1/750 (washee)  ✓
+        //   spinning → 1/150                              ✓
+        //   large    → 1/850 (both)                      ✓
+        if (effect === "platinum" || type === "spinning" || type === "large") {
           playRareSound();
         }
-        // Normal Variants
-        else if (roll <= 0.01) {
-          size = (val === "washee") ? 500 : 1000;
-          newImg.style.animation = "rainbowCycle 1.2s linear infinite";
-        } else if (roll <= 0.15) {
-          size = (val === "washee") ? 250 : 650;
-          newImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
-        }
 
+        // ── Position ──────────────────────────────────────────────────────────
         newImg.style.width = size + "px";
-        newImg.style.left = Math.random() * (window.innerWidth - size) + "px";
-        newImg.style.top = (Math.random() * (window.innerHeight - size) + window.scrollY) + "px";
+        const maxLeft = Math.max(0, window.innerWidth  - size);
+        const maxTop  = Math.max(0, window.innerHeight - size);
+        newImg.style.left = (Math.random() * maxLeft) + "px";
+        newImg.style.top  = (Math.random() * maxTop + window.scrollY) + "px";
+
         document.body.appendChild(newImg);
       }
     });
