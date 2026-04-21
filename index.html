@@ -192,7 +192,7 @@
         //  Gold     :  1/7    (both, ≈14.3%)
         //  Normal   :  remainder
         //
-        const platChance = isWashee ? (1 / 750) : (1 / 500);
+        const platChance = isWashee ? (1 / 500) : (1 / 500);
         const effectRoll = Math.random();
         let effect;
         if      (effectRoll < platChance)                          effect = "platinum";
@@ -220,7 +220,7 @@
         // Normal type borrows the classic per-effect sizes from the original code.
         let size;
         if (type === "spinning") {
-          size = isWashee ? 750 : 1400;
+          size = isWashee ? 400 : 1400;
         } else if (type === "large") {
           size = isWashee ? 700 : 1200;
         } else {
