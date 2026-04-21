@@ -189,7 +189,7 @@
         //
         //  Platinum :  1/500  (chicken) | 1/750 (washee)
         //  Rainbow  :  1/100  (both)
-        //  Gold     :  1/7    (both, ≈14.3%)
+        //  Gold     :  1/15   (both)
         //  Normal   :  remainder
         //
         const platChance = isWashee ? (1 / 500) : (1 / 500);
@@ -220,9 +220,9 @@
         // Normal type borrows the classic per-effect sizes from the original code.
         let size;
         if (type === "spinning") {
-          size = isWashee ? 400 : 1400;
+          size = isWashee ? 800 : 1400;
         } else if (type === "large") {
-          size = isWashee ? 700 : 1200;
+          size = isWashee ? 1200 : 1200;
         } else {
           // normal type — vary size by rarity to preserve original feel
           if      (effect === "platinum") size = isWashee ? 600  : 2000;
