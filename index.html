@@ -222,12 +222,13 @@
         if (type === "spinning") {
           size = isWashee ? 800 : 1400;
         } else if (type === "large") {
-          size = isWashee ? 1200 : 1200;
+          size = isWashee ? 2400 : 2400;
         } else {
           // normal type — vary size by rarity to preserve original feel
           if      (effect === "platinum") size = isWashee ? 600  : 2000;
           else if (effect === "rainbow")  size = isWashee ? 500  : 1000;
-          else if (effect === "gold")     size = isWashee ? 250  : 650;
+          else if (effect === "gold")     size = isWashee ? 650  : 650;
+          else if                         size = isWashee ? 450  : 450; 
         }
         
         // ── Apply animations ──────────────────────────────────────────────────
