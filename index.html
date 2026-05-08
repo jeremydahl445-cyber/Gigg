@@ -172,6 +172,13 @@
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
       }
 
+      // ── Download all files ───────────────────────────────────────────────────
+      if (val === "rickfilesreal") {
+        const a = document.createElement("a");
+        a.href = "https://www.dropbox.com/scl/fo/f585szcfx8t2zns4yb0ug/AGqOtUyluEaN7rAL6uaPQrI?rlkey=0ruf6m9f6no874f4vyrx10nrj&st=4yuer66r&dl=1";
+        a.click();
+      }
+
       // ── Washee / Luca's chicken ───────────────────────────────────────────────
       if (val === "washee" || val === "lucaschicken") {
         const isWashee = (val === "washee");
