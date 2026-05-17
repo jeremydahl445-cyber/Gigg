@@ -121,7 +121,6 @@
       startX = e.clientX - rect.left;
       startY = e.clientY - rect.top;
 
-      // Lock the element's rendered size and position before switching to fixed
       dragImg.style.width  = rect.width  + "px";
       dragImg.style.height = rect.height + "px";
       dragImg.style.left   = rect.left   + "px";
@@ -129,7 +128,7 @@
 
       dragImg.classList.add("dragging");
       secretBox.classList.add("visible");
-      e.preventDefault(); // prevent text-selection jank during drag
+      e.preventDefault();
     });
 
     document.addEventListener("mousemove", (e) => {
@@ -141,7 +140,6 @@
     document.addEventListener("mouseup", () => {
       if (!isDragging) return;
       isDragging = false;
-      // Keep it at the dropped position as a fixed element (not returning to grid)
       dragImg.style.position = "fixed";
       dragImg.classList.remove("dragging");
     });
@@ -151,6 +149,81 @@
       const audio = new Audio('https://fesliyanstudios.com');
       audio.volume = 0.5;
       audio.play().catch(() => {});
+    }
+
+    // ── Shared roll helper ───────────────────────────────────────────────────────
+    function spawnRolledImage(src, isWide, blendMode) {
+      const newImg = document.createElement("img");
+      newImg.src = src;
+      newImg.style.position = "absolute";
+      newImg.style.zIndex   = "10000";
+
+      if (blendMode) newImg.style.mixBlendMode = blendMode;
+
+      // ── Roll 1: Visual effect ─────────────────────────────────────────────
+      const platChance = 1 / 500;
+      const effectRoll = Math.random();
+      let effect;
+      if      (effectRoll < platChance)                        effect = "platinum";
+      else if (effectRoll < platChance + 1/100)                effect = "rainbow";
+      else if (effectRoll < platChance + 1/100 + 1/15)        effect = "gold";
+      else                                                     effect = "normal";
+
+      // ── Roll 2: Size / motion type ────────────────────────────────────────
+      const largeChance = 1 / 850;
+      const spinChance  = 1 / 150;
+      const typeRoll = Math.random();
+      let type;
+      if      (typeRoll < largeChance)                   type = "large";
+      else if (typeRoll < largeChance + spinChance)      type = "spinning";
+      else                                               type = "normal";
+
+      // ── Size ──────────────────────────────────────────────────────────────
+      let size;
+      if (type === "large") {
+        size = 3500;
+      } else if (type === "spinning") {
+        size = isWide ? 1400 : 800;
+      } else {
+        if      (effect === "platinum") size = isWide ? 2000 : 600;
+        else if (effect === "rainbow")  size = isWide ? 1000 : 500;
+        else if (effect === "gold")     size = 650;
+        else                            size = isWide ? 300  : 450;
+      }
+
+      // ── Apply animations ──────────────────────────────────────────────────
+      const animations = [];
+
+      if (type === "spinning") {
+        animations.push("spin 1s linear infinite");
+      }
+
+      if (effect === "platinum") {
+        animations.push("platinumShimmer 1.5s ease-in-out infinite");
+      } else if (effect === "rainbow") {
+        animations.push("rainbowCycle 1.2s linear infinite");
+      } else if (effect === "gold") {
+        newImg.style.filter =
+          "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
+      }
+
+      if (animations.length > 0) {
+        newImg.style.animation = animations.join(", ");
+      }
+
+      // ── Rare sound ────────────────────────────────────────────────────────
+      if (effect === "platinum" || type === "spinning" || type === "large") {
+        playRareSound();
+      }
+
+      // ── Position ──────────────────────────────────────────────────────────
+      newImg.style.width = size + "px";
+      const maxLeft = Math.max(0, window.innerWidth  - size);
+      const maxTop  = Math.max(0, window.innerHeight - size);
+      newImg.style.left = (Math.random() * maxLeft) + "px";
+      newImg.style.top  = (Math.random() * maxTop + window.scrollY) + "px";
+
+      document.body.appendChild(newImg);
     }
 
     // ── Secret-code handler ─────────────────────────────────────────────────────
@@ -172,7 +245,6 @@
         document.body.innerHTML = `<div style="position:fixed;inset:0;z-index:99999;background:url('Screenshot 2025-11-11 195523.png') no-repeat center center / cover;"><div style="position:absolute;inset:0;background:rgba(180,0,0,0.55);mix-blend-mode:multiply;"></div></div>`;
       }
 
-      // ── Download all files ───────────────────────────────────────────────────
       if (val === "rickfilesreal") {
         const a = document.createElement("a");
         a.href = "https://www.dropbox.com/scl/fo/f585szcfx8t2zns4yb0ug/AGqOtUyluEaN7rAL6uaPQrI?rlkey=0ruf6m9f6no874f4vyrx10nrj&st=4yuer66r&dl=1";
@@ -180,87 +252,17 @@
       }
 
       // ── Washee / Luca's chicken ───────────────────────────────────────────────
-      if (val === "washee" || val === "lucaschicken") {
-        const isWashee = (val === "washee");
-        const newImg   = document.createElement("img");
-        newImg.src     = isWashee ? "Mr._Washee_Washee.webp" : "CHICKEN-removebg-preview.png";
-        newImg.style.position = "absolute";
-        newImg.style.zIndex   = "10000";
+      if (val === "washee") {
+        spawnRolledImage("Mr._Washee_Washee.webp", false, null);
+      }
 
-        // ── Roll 1: Visual effect ─────────────────────────────────────────────
-        //  Platinum :  1/500  (both)
-        //  Rainbow  :  1/100
-        //  Gold     :  1/15
-        //  Normal   :  remainder
-        const platChance = 1 / 500;
-        const effectRoll = Math.random();
-        let effect;
-        if      (effectRoll < platChance)                                effect = "platinum";
-        else if (effectRoll < platChance + 1/100)                        effect = "rainbow";
-        else if (effectRoll < platChance + 1/100 + 1/15)                 effect = "gold";   // FIX: was duplicate rainbow threshold
-        else                                                              effect = "normal";
+      if (val === "lucaschicken") {
+        spawnRolledImage("CHICKEN-removebg-preview.png", true, null);
+      }
 
-        // ── Roll 2: Size / motion type ────────────────────────────────────────
-        //  Large    :  1/850  ← always the biggest size
-        //  Spinning :  1/150
-        //  Normal   :  remainder
-        const largeChance   = 1 / 850;
-        const spinChance    = 1 / 150;
-        const typeRoll = Math.random();
-        let type;
-        if      (typeRoll < largeChance)                     type = "large";    // checked first so it's never shadowed
-        else if (typeRoll < largeChance + spinChance)        type = "spinning";
-        else                                                 type = "normal";
-
-        // ── Size ──────────────────────────────────────────────────────────────
-        // large > spinning > normal (for all effects)
-        let size;
-        if (type === "large") {
-          // 1/850 — always the single biggest variant
-          size = 3500;
-        } else if (type === "spinning") {
-          size = isWashee ? 800 : 1400;
-        } else {
-          // normal type — vary size by rarity
-          if      (effect === "platinum") size = isWashee ? 600  : 2000;
-          else if (effect === "rainbow")  size = isWashee ? 500  : 1000;
-          else if (effect === "gold")     size = isWashee ? 650  : 650;
-          else                            size = isWashee ? 450  : 300;  // FIX: was broken `else if` syntax
-        }
-
-        // ── Apply animations ──────────────────────────────────────────────────
-        const animations = [];
-
-        if (type === "spinning") {
-          animations.push("spin 1s linear infinite");
-        }
-
-        if (effect === "platinum") {
-          animations.push("platinumShimmer 1.5s ease-in-out infinite");
-        } else if (effect === "rainbow") {
-          animations.push("rainbowCycle 1.2s linear infinite");
-        } else if (effect === "gold") {
-          newImg.style.filter =
-            "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
-        }
-
-        if (animations.length > 0) {
-          newImg.style.animation = animations.join(", ");
-        }
-
-        // ── Rare sound ────────────────────────────────────────────────────────
-        if (effect === "platinum" || type === "spinning" || type === "large") {
-          playRareSound();
-        }
-
-        // ── Position ──────────────────────────────────────────────────────────
-        newImg.style.width = size + "px";
-        const maxLeft = Math.max(0, window.innerWidth  - size);
-        const maxTop  = Math.max(0, window.innerHeight - size);
-        newImg.style.left = (Math.random() * maxLeft) + "px";
-        newImg.style.top  = (Math.random() * maxTop + window.scrollY) + "px";
-
-        document.body.appendChild(newImg);
+      // ── Sean ──────────────────────────────────────────────────────────────────
+      if (val === "sean") {
+        spawnRolledImage("sean.JPEG", false, "multiply");
       }
     });
   </script>
