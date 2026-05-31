@@ -85,6 +85,14 @@
       0%, 100% { filter: grayscale(1) brightness(1.2) contrast(1.2) drop-shadow(0 0 10px #e5e4e2); }
       50%       { filter: grayscale(1) brightness(2)   contrast(1.5) drop-shadow(0 0 30px #ffffff); }
     }
+    @keyframes diamondShimmer {
+      0%, 100% { filter: brightness(1.1) saturate(1.2) hue-rotate(185deg) drop-shadow(0 0 10px #7ec8e3); }
+      50%       { filter: brightness(1.8) saturate(2)   hue-rotate(200deg) drop-shadow(0 0 30px #add8e6); }
+    }
+    @keyframes emeraldShimmer {
+      0%, 100% { filter: brightness(1.1) saturate(2) hue-rotate(100deg) drop-shadow(0 0 15px #50c878); }
+      50%       { filter: brightness(2.2) saturate(4) hue-rotate(130deg) drop-shadow(0 0 45px #00ff88); }
+    }
   </style>
 </head>
 <body>
@@ -161,13 +169,20 @@
       if (blendMode) newImg.style.mixBlendMode = blendMode;
 
       // ── Roll 1: Visual effect ─────────────────────────────────────────────
-      const platChance = 1 / 500;
+      const emeraldChance = 1 / 1000;
+      const platChance    = 1 / 500;
+      const diamondChance = 1 / 200;
+      const rainbowChance = 1 / 100;
+      const goldChance    = 1 / 15;
+
       const effectRoll = Math.random();
       let effect;
-      if      (effectRoll < platChance)                        effect = "platinum";
-      else if (effectRoll < platChance + 1/100)                effect = "rainbow";
-      else if (effectRoll < platChance + 1/100 + 1/15)        effect = "gold";
-      else                                                     effect = "normal";
+      if      (effectRoll < emeraldChance)                                                              effect = "emerald";
+      else if (effectRoll < emeraldChance + platChance)                                                 effect = "platinum";
+      else if (effectRoll < emeraldChance + platChance + diamondChance)                                 effect = "diamond";
+      else if (effectRoll < emeraldChance + platChance + diamondChance + rainbowChance)                 effect = "rainbow";
+      else if (effectRoll < emeraldChance + platChance + diamondChance + rainbowChance + goldChance)    effect = "gold";
+      else                                                                                              effect = "normal";
 
       // ── Roll 2: Size / motion type ────────────────────────────────────────
       const largeChance = 1 / 850;
@@ -185,7 +200,9 @@
       } else if (type === "spinning") {
         size = isWide ? 1400 : 800;
       } else {
-        if      (effect === "platinum") size = isWide ? 2000 : 600;
+        if      (effect === "emerald")  size = isWide ? 2800 : 900;
+        else if (effect === "platinum") size = isWide ? 2000 : 600;
+        else if (effect === "diamond")  size = isWide ? 1100 : 550;
         else if (effect === "rainbow")  size = isWide ? 1000 : 500;
         else if (effect === "gold")     size = 650;
         else                            size = isWide ? 300  : 450;
@@ -198,8 +215,12 @@
         animations.push("spin 1s linear infinite");
       }
 
-      if (effect === "platinum") {
+      if (effect === "emerald") {
+        animations.push("emeraldShimmer 1.4s ease-in-out infinite");
+      } else if (effect === "platinum") {
         animations.push("platinumShimmer 1.5s ease-in-out infinite");
+      } else if (effect === "diamond") {
+        animations.push("diamondShimmer 1.8s ease-in-out infinite");
       } else if (effect === "rainbow") {
         animations.push("rainbowCycle 1.2s linear infinite");
       } else if (effect === "gold") {
@@ -212,7 +233,7 @@
       }
 
       // ── Rare sound ────────────────────────────────────────────────────────
-      if (effect === "platinum" || type === "spinning" || type === "large") {
+      if (effect === "emerald" || effect === "platinum" || effect === "diamond" || type === "spinning" || type === "large") {
         playRareSound();
       }
 
@@ -264,12 +285,12 @@
       if (val === "sean murphy") {
         spawnRolledImage("sean.png", false, null);
       }
-      
+
       // ── Melody ──────────────────────────────────────────────────────────────────
       if (val === "melodo") {
         spawnRolledImage("melody.png", false, null);
       }
-   
+
     });
   </script>
 </body>
