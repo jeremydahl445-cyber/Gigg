@@ -199,15 +199,15 @@
 
       const effectRoll = Math.random();
       let effect;
-      if      (effectRoll < galaxyChance)                                                                                          effect = "galaxy";
-      else if (effectRoll < galaxyChance + godlyChance)                                                                            effect = "godly";
-      else if (isSean && effectRoll < galaxyChance + godlyChance + redChance)                                                      effect = "red";
-      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance)                                                effect = "emerald";
-      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance)                                   effect = "platinum";
-      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance + diamondChance)                   effect = "diamond";
-      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance + diamondChance + rainbowChance)   effect = "rainbow";
+      if      (effectRoll < galaxyChance)                                                                                                     effect = "galaxy";
+      else if (effectRoll < galaxyChance + godlyChance)                                                                                       effect = "godly";
+      else if (isSean && effectRoll < galaxyChance + godlyChance + redChance)                                                                 effect = "red";
+      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance)                                                           effect = "emerald";
+      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance)                                              effect = "platinum";
+      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance + diamondChance)                              effect = "diamond";
+      else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance + diamondChance + rainbowChance)              effect = "rainbow";
       else if (effectRoll < galaxyChance + godlyChance + redChance + emeraldChance + platChance + diamondChance + rainbowChance + goldChance) effect = "gold";
-      else                                                                                                                          effect = "normal";
+      else                                                                                                                                     effect = "normal";
 
       // ── Roll 2: Size / motion type ────────────────────────────────────────
       const largeChance = 1 / 850;
@@ -329,12 +329,12 @@
 
       // ── Buttercup ─────────────────────────────────────────────────────────────
       if (val === "buttercup") {
-        spawnRolledImage("buttercup.png", false, null, false);
+        spawnRolledImage("BUTTERDOG.png", false, null, false);
       }
 
-      // ── Eren ──────────────────────────────────────────────────────────────────
-      if (val === "eren") {
-        spawnRolledImage("erin.JPEG", false, null, false);
+      // ── Aaron ─────────────────────────────────────────────────────────────────
+      if (val === "aaron") {
+        spawnRolledImage("erin.png", false, null, false);
       }
 
     });
