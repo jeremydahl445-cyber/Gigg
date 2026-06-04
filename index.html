@@ -179,7 +179,7 @@
     }
 
     // ── Shared roll helper ───────────────────────────────────────────────────────
-    function spawnRolledImage(src, isWide, blendMode, isSean) {
+    function spawnRolledImage(src, isWide, blendMode, isSean, sizeMultiplier = 1) {
       const newImg = document.createElement("img");
       newImg.src = src;
       newImg.style.position = "absolute";
@@ -235,6 +235,8 @@
         else if (effect === "gold")     size = 650;
         else                            size = isWide ? 300  : 450;
       }
+
+      size = Math.round(size * sizeMultiplier);
 
       // ── Apply animations ──────────────────────────────────────────────────
       const animations = [];
@@ -329,7 +331,7 @@
 
       // ── Buttercup ─────────────────────────────────────────────────────────────
       if (val === "buttercup") {
-        spawnRolledImage("buttercup.png", false, null, false);
+        spawnRolledImage("buttercup.png", false, null, false, 2);
       }
 
       // ── Aaron ─────────────────────────────────────────────────────────────────
