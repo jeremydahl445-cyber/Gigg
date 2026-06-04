@@ -201,6 +201,8 @@
       };
 
       // ── Roll effect ───────────────────────────────────────────────────────
+      // Each effect rolls independently at its own 1/N chance, rarest first.
+      // First one that hits wins. Falls through to "normal" if none hit.
       let effect = "normal";
       const effectRoll = Math.random();
       let cumulative = 0;
@@ -211,6 +213,9 @@
       }
 
       // ── Roll type ─────────────────────────────────────────────────────────
+      // Combined variant odds = effect_odds × type_odds (multiplicative).
+      // We achieve this by rolling type independently — the combo probability
+      // naturally becomes P(effect) × P(type) = 1/(effect_N × type_N).
       let type = "normal";
       const typeRoll = Math.random();
       if      (typeRoll < 1 / TYPE_ODDS.large)    type = "large";
@@ -237,7 +242,7 @@
 
       let size = Math.round(Math.max(effectSize, typeSize) * sizeMultiplier);
 
-      // ── Apply effect animations ───────────────────────────────────────────
+      // ── Apply effect animations (no spin for godly/galaxy — removed) ──────
       const animations = [];
 
       if (effect === "galaxy") {
@@ -289,6 +294,7 @@
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
 
+      // ── Existing Easter eggs ──────────────────────────────────────────────────
       if (val === "mylesquantiscute") {
         document.querySelectorAll("img").forEach(img => {
           img.src = (img.alt === "Cooper")
@@ -307,6 +313,7 @@
         a.click();
       }
 
+      // ── Washee / Luca's chicken ───────────────────────────────────────────────
       if (val === "washee") {
         spawnRolledImage("Mr._Washee_Washee.webp", false, null, false);
       }
@@ -315,20 +322,53 @@
         spawnRolledImage("CHICKEN-removebg-preview.png", true, null, false);
       }
 
+      // ── Sean ──────────────────────────────────────────────────────────────────
       if (val === "sean murphy") {
         spawnRolledImage("sean.png", false, null, true);
       }
 
+      // ── Melody ────────────────────────────────────────────────────────────────
       if (val === "jayahk") {
         spawnRolledImage("melody.png", false, null, false);
       }
 
+      // ── Buttercup ─────────────────────────────────────────────────────────────
       if (val === "buttercup") {
         spawnRolledImage("buttercup.png", false, null, false, 2);
       }
 
+      // ── Aaron ─────────────────────────────────────────────────────────────────
       if (val === "aaron") {
         spawnRolledImage("aaron.png", false, null, false);
+      }
+
+      // ── All normal variants ───────────────────────────────────────────────────
+      if (val === "allthelovekanye") {
+        const allEffects = ["galaxy","godly","emerald","platinum","diamond","rainbow","gold","normal"];
+        for (const effect of allEffects) {
+          const newImg = document.createElement("img");
+          newImg.src = "EVANDOGREAL.JPEG";
+          newImg.style.position = "absolute";
+          newImg.style.zIndex = "10000";
+
+          const effectSize = { galaxy:1800, godly:1600, emerald:900, platinum:600, diamond:550, rainbow:500, gold:650, normal:450 }[effect];
+          newImg.style.width = effectSize + "px";
+
+          const maxLeft = Math.max(0, window.innerWidth - effectSize);
+          const maxTop  = Math.max(0, window.innerHeight - effectSize);
+          newImg.style.left = (Math.random() * maxLeft) + "px";
+          newImg.style.top  = (Math.random() * maxTop + window.scrollY) + "px";
+
+          if (effect === "galaxy")        newImg.style.animation = "galaxyShimmer 2s ease-in-out infinite";
+          else if (effect === "godly")    newImg.style.animation = "godlyShimmer 0.8s ease-in-out infinite";
+          else if (effect === "emerald")  newImg.style.animation = "emeraldShimmer 1.4s ease-in-out infinite";
+          else if (effect === "platinum") newImg.style.animation = "platinumShimmer 1.5s ease-in-out infinite";
+          else if (effect === "diamond")  newImg.style.animation = "diamondShimmer 1.8s ease-in-out infinite";
+          else if (effect === "rainbow")  newImg.style.animation = "rainbowCycle 1.2s linear infinite";
+          else if (effect === "gold")     newImg.style.filter = "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
+
+          document.body.appendChild(newImg);
+        }
       }
 
     });
