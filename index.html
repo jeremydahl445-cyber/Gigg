@@ -72,6 +72,33 @@
       font-size: clamp(12px, 2vw, 16px);
     }
 
+    /* ── Rare reveal overlay ── */
+    #rareReveal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99998;
+      background: #000;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+    }
+    #rareReveal.visible {
+      display: flex;
+    }
+    #rareRevealText {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(28px, 5vw, 64px);
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
     /* Animations */
     @keyframes rainbowCycle {
       0%   { filter: hue-rotate(0deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
@@ -130,6 +157,11 @@
     </div>
   </div>
 
+  <!-- Rare reveal overlay -->
+  <div id="rareReveal">
+    <div id="rareRevealText"></div>
+  </div>
+
   <script>
     // ── Drag logic ──────────────────────────────────────────────────────────────
     const dragImg     = document.getElementById("dragImg");
@@ -173,6 +205,59 @@
       audio.play().catch(() => {});
     }
 
+    // ── Reveal overlay config per effect ────────────────────────────────────────
+    const REVEAL_CONFIG = {
+      galaxy:   { color: "#9933ff", glow: "#9933ff", label: "Galaxy" },
+      godly:    { color: "#ffee88", glow: "#ffee88", label: "Godly" },
+      red:      { color: "#ff3300", glow: "#ff3300", label: "Red" },
+      emerald:  { color: "#88ffaa", glow: "#88ffaa", label: "Emerald" },
+      platinum: { color: "#e8e8e8", glow: "#ffffff", label: "Platinum" },
+    };
+
+    // ── Rare reveal function ─────────────────────────────────────────────────────
+    function showRareReveal(effect, type) {
+      const EFFECT_ODDS = { galaxy:5000, godly:2500, red:1500, emerald:1000, platinum:500, diamond:200, rainbow:100, gold:15, normal:1 };
+      const TYPE_ODDS   = { large:850, spinning:150, normal:1 };
+
+      const combinedOdds = EFFECT_ODDS[effect] * TYPE_ODDS[type];
+      if (combinedOdds <= 500) return;
+
+      let cfg = REVEAL_CONFIG[effect] || null;
+
+      if (!cfg) {
+        if (type === "large")         cfg = { color: "#ffffff", glow: "#ffffff", label: "Large" };
+        else if (type === "spinning") cfg = { color: "#ffffff", glow: "#ffffff", label: "Spinning" };
+        else return;
+      }
+
+      let label = cfg.label;
+      if (type === "large")    label += " (Large)";
+      if (type === "spinning") label += " (Spinning)";
+
+      const overlay = document.getElementById("rareReveal");
+      const text    = document.getElementById("rareRevealText");
+
+      text.textContent = label;
+      text.style.color      = cfg.color;
+      text.style.textShadow = `0 0 20px ${cfg.glow}, 0 0 60px ${cfg.glow}, 0 0 120px ${cfg.glow}`;
+      overlay.style.boxShadow = `inset 0 0 120px 40px ${cfg.glow}`;
+
+      overlay.style.transition = "opacity 0.25s ease";
+      overlay.style.opacity = "0";
+      overlay.classList.add("visible");
+      overlay.getBoundingClientRect();
+      overlay.style.opacity = "1";
+
+      setTimeout(() => {
+        overlay.style.transition = "opacity 1s ease";
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+          overlay.classList.remove("visible");
+          overlay.style.boxShadow = "";
+        }, 1000);
+      }, 2000);
+    }
+
     // ── Shared roll helper ───────────────────────────────────────────────────────
     function spawnRolledImage(src, isWide, blendMode, isSean, sizeMultiplier = 1) {
       const newImg = document.createElement("img");
@@ -182,11 +267,10 @@
 
       if (blendMode) newImg.style.mixBlendMode = blendMode;
 
-      // ── Effect odds (base 1-in-N) ─────────────────────────────────────────
       const EFFECT_ODDS = {
         galaxy:   5000,
         godly:    2500,
-        red:      1500,  // isSean only
+        red:      1500,
         emerald:  1000,
         platinum: 500,
         diamond:  200,
@@ -194,15 +278,11 @@
         gold:     15,
       };
 
-      // ── Type (modifier) odds (base 1-in-N) ───────────────────────────────
       const TYPE_ODDS = {
         large:    850,
         spinning: 150,
       };
 
-      // ── Roll effect ───────────────────────────────────────────────────────
-      // Each effect rolls independently at its own 1/N chance, rarest first.
-      // First one that hits wins. Falls through to "normal" if none hit.
       let effect = "normal";
       const effectRoll = Math.random();
       let cumulative = 0;
@@ -212,16 +292,13 @@
         if (effectRoll < cumulative) { effect = e; break; }
       }
 
-      // ── Roll type ─────────────────────────────────────────────────────────
-      // Combined variant odds = effect_odds × type_odds (multiplicative).
-      // We achieve this by rolling type independently — the combo probability
-      // naturally becomes P(effect) × P(type) = 1/(effect_N × type_N).
       let type = "normal";
       const typeRoll = Math.random();
       if      (typeRoll < 1 / TYPE_ODDS.large)    type = "large";
       else if (typeRoll < 1 / TYPE_ODDS.large + 1 / TYPE_ODDS.spinning) type = "spinning";
 
-      // ── Size: use the larger of effect size vs type size ──────────────────
+      showRareReveal(effect, type);
+
       const effectSize = {
         galaxy:   isWide ? 5000 : 1800,
         godly:    isWide ? 4500 : 1600,
@@ -242,7 +319,6 @@
 
       let size = Math.round(Math.max(effectSize, typeSize) * sizeMultiplier);
 
-      // ── Apply effect animations (no spin for godly/galaxy — removed) ──────
       const animations = [];
 
       if (effect === "galaxy") {
@@ -264,7 +340,6 @@
           "sepia(1) saturate(10) hue-rotate(15deg) brightness(1.3) drop-shadow(0 0 10px gold)";
       }
 
-      // ── Apply type animation (spin only if type === spinning) ────────────
       if (type === "spinning") {
         animations.push("spin 1s linear infinite");
       }
@@ -273,12 +348,10 @@
         newImg.style.animation = animations.join(", ");
       }
 
-      // ── Rare sound ────────────────────────────────────────────────────────
       if (["galaxy","godly","red","emerald","platinum","diamond"].includes(effect) || type === "spinning" || type === "large") {
         playRareSound();
       }
 
-      // ── Position ──────────────────────────────────────────────────────────
       newImg.style.width = size + "px";
       const maxLeft = Math.max(0, window.innerWidth  - size);
       const maxTop  = Math.max(0, window.innerHeight - size);
@@ -294,7 +367,6 @@
       const val = secretInput.value.toLowerCase().trim();
       secretInput.value = "";
 
-      // ── Existing Easter eggs ──────────────────────────────────────────────────
       if (val === "mylesquantiscute") {
         document.querySelectorAll("img").forEach(img => {
           img.src = (img.alt === "Cooper")
@@ -313,7 +385,6 @@
         a.click();
       }
 
-      // ── Washee / Luca's chicken ───────────────────────────────────────────────
       if (val === "washee") {
         spawnRolledImage("Mr._Washee_Washee.webp", false, null, false);
       }
@@ -322,27 +393,22 @@
         spawnRolledImage("CHICKEN-removebg-preview.png", true, null, false);
       }
 
-      // ── Sean ──────────────────────────────────────────────────────────────────
       if (val === "sean murphy") {
         spawnRolledImage("sean.png", false, null, true);
       }
 
-      // ── Melody ────────────────────────────────────────────────────────────────
       if (val === "jayahk") {
         spawnRolledImage("melody.png", false, null, false);
       }
 
-      // ── Buttercup ─────────────────────────────────────────────────────────────
       if (val === "buttercup") {
         spawnRolledImage("buttercup.png", false, null, false, 2);
       }
 
-      // ── Aaron ─────────────────────────────────────────────────────────────────
       if (val === "aaron") {
         spawnRolledImage("aaron.png", false, null, false);
       }
 
-      // ── All normal variants ───────────────────────────────────────────────────
       if (val === "allthelovekanye") {
         const allEffects = ["galaxy","godly","emerald","platinum","diamond","rainbow","gold","normal"];
         for (const effect of allEffects) {
