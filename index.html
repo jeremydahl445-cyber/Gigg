@@ -99,6 +99,19 @@
       z-index: 1;
     }
 
+    /* ── Dih Sean floating words ── */
+    .dih-sean-word {
+      position: fixed;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      pointer-events: none;
+      z-index: 99999;
+      color: #ff0080;
+      text-shadow: 0 0 20px #ff0080, 0 0 60px #ff0080, 0 0 120px #ff0080;
+    }
+
     /* Animations */
     @keyframes rainbowCycle {
       0%   { filter: hue-rotate(0deg) saturate(5) brightness(1.2) drop-shadow(0 0 15px white); }
@@ -133,6 +146,13 @@
       0%   { filter: brightness(1.4) saturate(6) hue-rotate(270deg) drop-shadow(0 0 25px #9933ff); }
       50%  { filter: brightness(2.2) saturate(2) hue-rotate(270deg) drop-shadow(0 0 70px #ffffff); }
       100% { filter: brightness(1.4) saturate(6) hue-rotate(270deg) drop-shadow(0 0 25px #9933ff); }
+    }
+    @keyframes dihSeanFloat {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      25%  { transform: translate(var(--dx1), var(--dy1)) rotate(var(--dr1)); }
+      50%  { transform: translate(var(--dx2), var(--dy2)) rotate(var(--dr2)); }
+      75%  { transform: translate(var(--dx3), var(--dy3)) rotate(var(--dr3)); }
+      100% { transform: translate(0, 0) rotate(0deg); }
     }
   </style>
 </head>
@@ -207,40 +227,60 @@
 
     // ── Reveal overlay config per effect ────────────────────────────────────────
     const REVEAL_CONFIG = {
-      galaxy:   { color: "#9933ff", glow: "#9933ff", label: "Galaxy" },
-      godly:    { color: "#ffee88", glow: "#ffee88", label: "Godly" },
-      red:      { color: "#ff3300", glow: "#ff3300", label: "Red" },
-      emerald:  { color: "#88ffaa", glow: "#88ffaa", label: "Emerald" },
-      platinum: { color: "#e8e8e8", glow: "#ffffff", label: "Platinum" },
+      galaxy:   { color: "#9933ff", glow: "#9933ff" },
+      godly:    { color: "#ffee88", glow: "#ffee88" },
+      red:      { color: "#ff3300", glow: "#ff3300" },
+      emerald:  { color: "#88ffaa", glow: "#88ffaa" },
+      platinum: { color: "#e8e8e8", glow: "#ffffff" },
+      diamond:  { color: "#aaddff", glow: "#aaddff" },
+      rainbow:  { color: "#ffffff", glow: "#ffffff" },
+      gold:     { color: "#ffd700", glow: "#ffd700" },
     };
 
+    // ── Effect/type display names ────────────────────────────────────────────────
+    const EFFECT_NAMES = {
+      galaxy: "Galaxy", godly: "Godly", red: "Red", emerald: "Emerald",
+      platinum: "Platinum", diamond: "Diamond", rainbow: "Rainbow", gold: "Gold", normal: "Normal"
+    };
+    const TYPE_NAMES = { large: "Large", spinning: "Spinning", normal: "" };
+
+    // ── Odds tables ──────────────────────────────────────────────────────────────
+    const EFFECT_ODDS = {
+      galaxy: 5000, godly: 2500, red: 1500, emerald: 1000,
+      platinum: 500, diamond: 200, rainbow: 100, gold: 15, normal: 1
+    };
+    const TYPE_ODDS = { large: 850, spinning: 150, normal: 1 };
+
     // ── Rare reveal function ─────────────────────────────────────────────────────
-    function showRareReveal(effect, type) {
-      const EFFECT_ODDS = { galaxy:5000, godly:2500, red:1500, emerald:1000, platinum:500, diamond:200, rainbow:100, gold:15, normal:1 };
-      const TYPE_ODDS   = { large:850, spinning:150, normal:1 };
+    // Only shows if combined odds > 1/999 (i.e. combinedOdds > 999)
+    function showRareReveal(effect, type, overrideLabel, overrideColor, overrideGlow) {
+      const effectOdds = EFFECT_ODDS[effect] || 1;
+      const typeOdds   = type !== "normal" ? TYPE_ODDS[type] : 1;
+      const combinedOdds = effectOdds * typeOdds;
 
-      const combinedOdds = EFFECT_ODDS[effect] * TYPE_ODDS[type];
-      if (combinedOdds <= 500) return;
+      if (!overrideLabel && combinedOdds <= 999) return;
 
-      let cfg = REVEAL_CONFIG[effect] || null;
-
-      if (!cfg) {
-        if (type === "large")         cfg = { color: "#ffffff", glow: "#ffffff", label: "Large" };
-        else if (type === "spinning") cfg = { color: "#ffffff", glow: "#ffffff", label: "Spinning" };
-        else return;
+      // Build label: "Gold Spinning", "Gold Large", "Galaxy", "Platinum", etc.
+      let label;
+      if (overrideLabel) {
+        label = overrideLabel;
+      } else {
+        const effectName = EFFECT_NAMES[effect] || effect;
+        const typeName   = type !== "normal" ? TYPE_NAMES[type] : "";
+        label = typeName ? `${effectName} ${typeName}` : effectName;
       }
 
-      let label = cfg.label;
-      if (type === "large")    label += " (Large)";
-      if (type === "spinning") label += " (Spinning)";
+      const cfg = REVEAL_CONFIG[effect] || { color: "#ffffff", glow: "#ffffff" };
+      const color = overrideColor || cfg.color;
+      const glow  = overrideGlow  || cfg.glow;
 
       const overlay = document.getElementById("rareReveal");
       const text    = document.getElementById("rareRevealText");
 
       text.textContent = label;
-      text.style.color      = cfg.color;
-      text.style.textShadow = `0 0 20px ${cfg.glow}, 0 0 60px ${cfg.glow}, 0 0 120px ${cfg.glow}`;
-      overlay.style.boxShadow = `inset 0 0 120px 40px ${cfg.glow}`;
+      text.style.color      = color;
+      text.style.textShadow = `0 0 20px ${glow}, 0 0 60px ${glow}, 0 0 120px ${glow}`;
+      overlay.style.boxShadow = `inset 0 0 120px 40px ${glow}`;
 
       overlay.style.transition = "opacity 0.25s ease";
       overlay.style.opacity = "0";
@@ -258,6 +298,48 @@
       }, 2000);
     }
 
+    // ── Dih Sean floating words ──────────────────────────────────────────────────
+    function spawnDihSeanWords() {
+      const phrases = ["DIH", "SEAN"];
+      const colors  = ["#ff0080", "#ff00ff", "#ff4400", "#ff0044", "#cc00ff"];
+
+      for (let i = 0; i < 18; i++) {
+        const el = document.createElement("div");
+        el.classList.add("dih-sean-word");
+        el.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+
+        const size = Math.floor(Math.random() * 80) + 40;
+        el.style.fontSize = size + "px";
+
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        el.style.color = color;
+        el.style.textShadow = `0 0 20px ${color}, 0 0 60px ${color}`;
+
+        const startLeft = Math.random() * (window.innerWidth - 200);
+        const startTop  = Math.random() * (window.innerHeight - 100);
+        el.style.left = startLeft + "px";
+        el.style.top  = startTop  + "px";
+
+        // Random movement deltas for keyframe animation
+        const randDelta = () => (Math.random() - 0.5) * 600;
+        const randRot   = () => (Math.random() - 0.5) * 720;
+        el.style.setProperty("--dx1", randDelta() + "px");
+        el.style.setProperty("--dy1", randDelta() + "px");
+        el.style.setProperty("--dr1", randRot()   + "deg");
+        el.style.setProperty("--dx2", randDelta() + "px");
+        el.style.setProperty("--dy2", randDelta() + "px");
+        el.style.setProperty("--dr2", randRot()   + "deg");
+        el.style.setProperty("--dx3", randDelta() + "px");
+        el.style.setProperty("--dy3", randDelta() + "px");
+        el.style.setProperty("--dr3", randRot()   + "deg");
+
+        const duration = (Math.random() * 3 + 2).toFixed(1);
+        el.style.animation = `dihSeanFloat ${duration}s ease-in-out infinite`;
+
+        document.body.appendChild(el);
+      }
+    }
+
     // ── Shared roll helper ───────────────────────────────────────────────────────
     function spawnRolledImage(src, isWide, blendMode, isSean, sizeMultiplier = 1) {
       const newImg = document.createElement("img");
@@ -267,26 +349,51 @@
 
       if (blendMode) newImg.style.mixBlendMode = blendMode;
 
-      const EFFECT_ODDS = {
-        galaxy:   5000,
-        godly:    2500,
-        red:      1500,
-        emerald:  1000,
-        platinum: 500,
-        diamond:  200,
-        rainbow:  100,
-        gold:     15,
-      };
+      // ── "Dih Sean" exclusive 1/10000 roll (Sean only) ──
+      if (isSean && Math.random() < 1 / 10000) {
+        // Show announcement in huge font
+        const overlay = document.getElementById("rareReveal");
+        const text    = document.getElementById("rareRevealText");
+        text.textContent = "DIH SEAN";
+        text.style.fontSize = "clamp(60px, 12vw, 140px)";
+        text.style.color = "#ff0080";
+        text.style.textShadow = "0 0 20px #ff0080, 0 0 60px #ff0080, 0 0 120px #ff0080, 0 0 200px #ff0080";
+        overlay.style.boxShadow = "inset 0 0 120px 40px #ff0080";
+        overlay.style.transition = "opacity 0.25s ease";
+        overlay.style.opacity = "0";
+        overlay.classList.add("visible");
+        overlay.getBoundingClientRect();
+        overlay.style.opacity = "1";
 
-      const TYPE_ODDS = {
-        large:    850,
-        spinning: 150,
-      };
+        setTimeout(() => {
+          overlay.style.transition = "opacity 1s ease";
+          overlay.style.opacity = "0";
+          setTimeout(() => {
+            overlay.classList.remove("visible");
+            overlay.style.boxShadow = "";
+            text.style.fontSize = "";
+            // Spawn the persistent floating words AFTER the overlay fades
+            spawnDihSeanWords();
+          }, 1000);
+        }, 2500);
 
+        playRareSound();
+
+        // Still spawn the image too
+        newImg.style.width = "800px";
+        newImg.style.animation = "spin 0.5s linear infinite";
+        const maxLeft = Math.max(0, window.innerWidth  - 800);
+        const maxTop  = Math.max(0, window.innerHeight - 800);
+        newImg.style.left = (Math.random() * maxLeft) + "px";
+        newImg.style.top  = (Math.random() * maxTop + window.scrollY) + "px";
+        document.body.appendChild(newImg);
+        return;
+      }
+
+      const effectOrder = ["galaxy", "godly", ...(isSean ? ["red"] : []), "emerald", "platinum", "diamond", "rainbow", "gold"];
       let effect = "normal";
       const effectRoll = Math.random();
       let cumulative = 0;
-      const effectOrder = ["galaxy", "godly", ...(isSean ? ["red"] : []), "emerald", "platinum", "diamond", "rainbow", "gold"];
       for (const e of effectOrder) {
         cumulative += 1 / EFFECT_ODDS[e];
         if (effectRoll < cumulative) { effect = e; break; }
@@ -294,8 +401,8 @@
 
       let type = "normal";
       const typeRoll = Math.random();
-      if      (typeRoll < 1 / TYPE_ODDS.large)    type = "large";
-      else if (typeRoll < 1 / TYPE_ODDS.large + 1 / TYPE_ODDS.spinning) type = "spinning";
+      if      (typeRoll < 1 / TYPE_ODDS.large)                                 type = "large";
+      else if (typeRoll < 1 / TYPE_ODDS.large + 1 / TYPE_ODDS.spinning)        type = "spinning";
 
       showRareReveal(effect, type);
 
@@ -403,6 +510,12 @@
 
       if (val === "buttercup") {
         spawnRolledImage("buttercup.png", false, null, false, 2);
+      }
+
+      if (val === "butterspam") {
+        for (let i = 0; i < 100; i++) {
+          spawnRolledImage("buttercup.png", false, null, false, 1);
+        }
       }
 
       if (val === "aaron") {
